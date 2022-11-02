@@ -7,8 +7,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#define listSize 100
-
+#define listSize 10
+#define fileName "studentMarks1"
 typedef struct {
 char student_index[20]; //EG/XXXX/XXXX
 float assgnmt01_marks; //15%
@@ -19,6 +19,8 @@ float finalExam_marks; //50%
 
 student_marks markList[listSize];
 int regNumberList[listSize];
+int length ;
+
 
 float numGenarator(int lower, int upper){
     int num1 = (rand() % (upper - lower + 1)) + lower;
@@ -36,15 +38,15 @@ float numGenarator(int lower, int upper){
 int regNumberGen(int lower, int upper){
     int arrayLength =0;
     int num = (rand() % (upper - lower + 1)) + lower;
-    for(int i = 0; i<listSize; i++){
+    length = sizeof(regNumberList)/sizeof(regNumberList[0]);    
+    for(int i = 0; i<length; i++){
+       
         if(regNumberList[i] == num){
            num = regNumberGen(lower,upper); 
         }
-        if(regNumberList[i] == 0){
-            arrayLength = i;
-        }
+       
     }
-    regNumberList[arrayLength] = num;
+    regNumberList[length] = num;
     return num;
 }
 
@@ -69,13 +71,10 @@ student_marks* studentList(){
     }
     return markList;
 }
-
-void main(){
-    for(int a = 0;a<listSize;a++){
-        regNumberList[a] = 0;
-    }
-    int fd;
-    fd = open("studentMarks.txt", O_RDWR | O_CREAT | O_TRUNC,0644);
+void writeToList()
+{
+  int fd;
+    fd = open(fileName, O_RDWR | O_CREAT | O_TRUNC,0644);
     student_marks* tempMarkList = studentList();
     for(int j = 0; j < listSize; j++){
         student_marks tempStudent = *(tempMarkList + j);
@@ -85,15 +84,29 @@ void main(){
             printf("Error No: %d ",errno);
             exit(1);
         }
-        printf("Saved : %s\n",(tempStudent.student_index));
+        printf("Saved Studen : %s\n",(tempStudent.student_index));
     }
-    //read
+    close(fd);
+}
+
+void readFromList()
+{
+    int fd;
+    fd = open(fileName,O_RDONLY);
     student_marks tempStudent2[100];
     lseek(fd,0,SEEK_SET);
     read(fd,&tempStudent2, sizeof(tempStudent2));
     for(int z = 0; z <listSize ; z++){
         printf(" Saved data : %d\t%s\t%f\t%f\t%f\t%f\n",z+1,tempStudent2[z].student_index,tempStudent2[z].assgnmt01_marks,tempStudent2[z].assgnmt02_marks,tempStudent2[z].project_marks,tempStudent2[z].finalExam_marks);
     }
-
     close(fd);
 }
+
+void main(){
+    for(int a = 0;a<listSize;a++){
+        regNumberList[a] = 0;
+    }
+    writeToList();
+    readFromList();
+}
+
