@@ -96,9 +96,7 @@ void readFromList()
     student_marks tempStudent2[100];
     lseek(fd,0,SEEK_SET);
     read(fd,&tempStudent2, sizeof(tempStudent2));
-    for(int z = 0; z <listSize ; z++){
-        printf(" Saved data : %d\t%s\t%f\t%f\t%f\t%f\n",z+1,tempStudent2[z].student_index,tempStudent2[z].assgnmt01_marks,tempStudent2[z].assgnmt02_marks,tempStudent2[z].project_marks,tempStudent2[z].finalExam_marks);
-    }
+  
     close(fd);
 }
 
