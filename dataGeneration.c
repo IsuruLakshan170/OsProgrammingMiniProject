@@ -95,6 +95,7 @@ void readFromList()
     fd = open(fileName,O_RDONLY);
     student_marks tempStudent2[100];
     lseek(fd,0,SEEK_SET);
+   
     read(fd,&tempStudent2, sizeof(tempStudent2));
   
     close(fd);
