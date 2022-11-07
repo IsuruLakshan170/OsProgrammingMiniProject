@@ -31,6 +31,8 @@ void update();
 void delete();
 bool isExistingStudent();
 void addStudent();
+void updateStudent();
+void deleteStudent();
 
 int main()
 {
@@ -113,10 +115,12 @@ void insert(){
     addStudent();
 }
 void update(){
- printf("update\n");
+    printf("update\n");
+    updateStudent();
 }
 void delete(){
- printf("delete\n");
+    printf("delete\n");
+    deleteStudent();
 }
 
 
@@ -137,6 +141,38 @@ void addStudent(){
 
 }
 
+void updateStudent(){
+    printf("Enter student regNo (EG/xxxx/xxxx)\n");
+    printf("Reg No : ");
+    scanf("%s",newStudentRegNo);
+    printf("Entered the Student : %s\n",newStudentRegNo);
+   bool isNewStudent = isExistingStudent();
+   if(isNewStudent)
+   {
+    printf("This Student not in list\n");//can not do process
+       }
+   else
+   {
+       printf("Existing student\n");//can do process
+      }
+
+}
+void deleteStudent(){
+    printf("Enter student regNo (EG/xxxx/xxxx)\n");
+    printf("Reg No : ");
+    scanf("%s",newStudentRegNo);
+    printf("Entered New Student : %s\n",newStudentRegNo);
+   bool isNewStudent = isExistingStudent();
+   if(isNewStudent)
+   {
+    printf("This Student not in list can not delete\n");
+       }
+   else
+   {
+       printf("Existing student\n");
+      }
+
+}
 bool isExistingStudent(){
     printf("Size %d\n",listSize);
     for(int i =0;i<listSize;i++)
