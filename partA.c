@@ -112,7 +112,15 @@ void selectOperation(int index)
 
 void insert(){
     printf("Insert\n");
-    addStudent();
+    int studentListSize = readList();
+    if(studentListSize == 100){
+        printf("Student List is full\n");
+    }
+    else
+    {
+        addStudent();
+    }
+ 
 }
 void update(){
     printf("update\n");
@@ -150,7 +158,7 @@ void updateStudent(){
    if(isNewStudent)
    {
     printf("This Student not in list\n");//can not do process
-       }
+    }
    else
    {
        printf("Existing student\n");//can do process
