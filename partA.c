@@ -22,6 +22,7 @@ float finalExam_marks; //50%
 
 student_marks studentList[100];
 int codeNo;
+int stdudentIndex;
 char newStudentRegNo[20];
 int readList();   
 void greetings();
@@ -33,6 +34,8 @@ bool isExistingStudent();
 void addStudent();
 void updateStudent();
 void deleteStudent();
+void writeFile();
+int getIndex();
 
 int main()
 {
@@ -176,20 +179,51 @@ void deleteStudent(){
     printf("This Student not in list can not delete\n");
        }
    else
-   {
-       printf("Existing student\n");
+   {    
+          printf("Existing student %s delete successfully \n",newStudentRegNo);
+        
+          printf("index %d\n",stdudentIndex);
+         // writeFile();
       }
 
 }
 bool isExistingStudent(){
     printf("Size %d\n",listSize);
     for(int i =0;i<listSize;i++)
-    { 
+    {   
         if(!strcmp(studentList[i].student_index,newStudentRegNo))
         {
-
+           stdudentIndex =i;
            return true;
+   
         }
    }
   return false;
+}
+
+
+void writeFile()
+{
+  int fd;
+    fd = open(fileName, O_RDWR | O_CREAT | O_TRUNC,0644);
+   
+    for(int j = 0; j < listSize; j++){
+        student_marks tempStudent = *(studentList + j);
+        int errorWrite = write(fd,&tempStudent,sizeof(tempStudent));
+        if(errorWrite == -1){
+            perror("Wrting error : ");
+            printf("Error No: %d ",errno);
+            exit(1);
+        }
+        printf("Write again Studen : %s\n",(tempStudent.student_index));
+    }
+    close(fd);
+}
+
+int getIndex(){
+    for(int i=0;i<listSize;i++){
+      if( studentList[i].student_index == newStudentRegNo){
+        return i;
+      }
+    }
 }
