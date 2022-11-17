@@ -8,7 +8,7 @@
 #include <errno.h>
 #include <stdbool.h>
 
-#define listSize 100
+#define listSize 11
 #define fileName "studentMarks1"
 
 typedef struct
@@ -20,12 +20,12 @@ typedef struct
     float finalExam_marks;  // 50%
 } student_marks;
 
-student_marks studentList[100];
+student_marks studentList[listSize];
 int codeNo;
 int studentListSize;
-int studentIndex;
-char newStudentRegNo[20]="EG/2018/3487";
-int readList();
+int studentIndex = 0;
+char newStudentRegNo[20] = "EG/2018/3427";
+int readFile();
 void greetings();
 void selectOperation(int codeNo);
 void insert();
@@ -38,47 +38,50 @@ void deleteStudent();
 void writeFile();
 void removeStudentFromArray();
 int getStudentListSize();
+void printStudentList();
 
 int main()
 {
-    int arraySize = readList();
-    if (arraySize < 100)
+    readFile();
+    printStudentList();
+    if (studentListSize < listSize)
     {
-        printf("Student list lower than 100\n");
+        printf("Student list lower than %d\n", listSize);
+        greetings();
     }
     else
     {
-        printf("Student list FUll\n");
+        printf("Student list full \n");
         greetings();
     }
 }
-int readList()
+int readFile()
 {
-
+    studentListSize = 0;
     int fd;
-    int arrySize;
+
     fd = open(fileName, O_RDONLY);
     student_marks lastStudent;
     student_marks tempStudent;
-    lseek(fd, 0, SEEK_END);
+    lseek(fd, -sizeof(lastStudent), SEEK_END);
     read(fd, &lastStudent, sizeof(lastStudent));
     lseek(fd, 0, SEEK_SET);
 
     for (int i = 0; i < listSize; i++)
     {
         read(fd, &tempStudent, sizeof(tempStudent));
-        arrySize++;
+
         studentList[i] = tempStudent;
-        printf("%d :\n",i);
-         studentListSize ++;
-     //   printf("%s \n", tempStudent.student_index);
+
+        studentListSize++;
+        printf("%d read from file : %s %s \n", i+1, tempStudent.student_index, lastStudent.student_index);
         if (strcmp(tempStudent.student_index, lastStudent.student_index) == 0)
         {
             break;
         }
     }
+    printf("Read file size : %d\n",studentListSize);
     close(fd);
-    return arrySize;
 }
 
 void greetings()
@@ -90,8 +93,8 @@ void greetings()
     char ope2[] = "002\tUpdate Student";
     char ope3[] = "003\tDelete Student";
     printf("%s\n%s\n%s\n%s\n%s\n", heading, title, ope1, ope2, ope3);
-    printf("Enter code : ");
-  //  scanf("%d", &codeNo);
+    printf("Enter code : \n");
+    //  scanf("%d", &codeNo);
     codeNo = 003;
     selectOperation(codeNo);
 }
@@ -127,8 +130,8 @@ void selectOperation(int index)
 void insert()
 {
     printf("Insert\n");
-    int studentListSize = readList();
-    if (studentListSize == 100)
+    readFile();
+    if (studentListSize == listSize)
     {
         printf("Student List is full\n");
     }
@@ -151,8 +154,8 @@ void delete ()
 void addStudent()
 {
     printf("Enter student regNo (EG/xxxx/xxxx)\n");
-    printf("Reg No : ");
-    scanf("%s", newStudentRegNo);
+    printf("Reg No : \n");
+    // scanf("%s", newStudentRegNo);
     printf("Entered New Student : %s\n", newStudentRegNo);
     bool isNewStudent = isExistingStudent();
     if (isNewStudent)
@@ -185,36 +188,50 @@ void deleteStudent()
 {
     printf("Enter student regNo (EG/xxxx/xxxx)\n");
     printf("Reg No : ");
-   // scanf("%s", newStudentRegNo);
-   //  newStudentRegNo[20] ="EG/2018/3365";
-    printf("Entered New Student : %s\n", newStudentRegNo);
+    // scanf("%s", newStudentRegNo);
+    //  newStudentRegNo[20] ="EG/2018/3365";
+    printf("Entered Student No: %s\n", newStudentRegNo);
     bool isNewStudent = isExistingStudent();
     if (!isNewStudent)
     {
-       printf("This Student not in list can not delete\n");
+        printf("This Student not in list can not delete\n");
     }
     else
     {
-       printf("Existing student %s delete successfully \n", newStudentRegNo);
+        printf("This Student  in list can  delete\n");
+        // printf("Existing student %s delete successfully \n", newStudentRegNo);
 
-       printf("index %d\n", studentIndex);
-       removeStudentFromArray();
-       writeFile();
+        printf("index : %d\n", studentIndex);
+        removeStudentFromArray();
+        printStudentList();
+        writeFile();
+        readFile();
+        printStudentList();
     }
+}
+void printStudentList()
+{   int j=0;
+    for (int i = 0; i < studentListSize; i++)
+    {
+        j++;
+        printf("%d : %s \n", i + 1, studentList[i].student_index);
+    }
+    printf("total read from array of student List  size: %d \n",j);
 }
 bool isExistingStudent()
 {
-    printf("Size student list %d\n", studentListSize);
+    // printf("Size student list %d\n", studentListSize);
     for (int i = 0; i < studentListSize; i++)
     {
-        studentIndex ++;
-        printf("%d : %s %s\n",i+1,studentList[i].student_index,newStudentRegNo);
-         if (!strcmp(studentList[i].student_index, newStudentRegNo))
+
+       // printf("%d : %s %s\n", i + 1, studentList[i].student_index, newStudentRegNo);
+        if (!strcmp(studentList[i].student_index, newStudentRegNo))
         {
-          //
-            
+            //
+           
             return true;
         }
+        studentIndex ++;
     }
     return false;
 }
@@ -234,19 +251,16 @@ void writeFile()
             printf("Error No: %d ", errno);
             exit(1);
         }
-        printf("%d Write again Studen : %s\n",j+1 ,(tempStudent.student_index));
+        printf("%d Write again Studen : %s\n", j + 1, (tempStudent.student_index));
     }
     close(fd);
 }
 
-
 void removeStudentFromArray()
 {
-	printf("%d st index : \n",studentIndex);
+    printf("Remove student index %d: \n", studentIndex);
     studentList[studentIndex]=studentList[studentListSize-1];
     studentListSize --;
-  //  listSize =listSize+1;
+   
+    //  listSize =listSize+1;
 }
-
-
-
