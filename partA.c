@@ -24,7 +24,7 @@ student_marks studentList[listSize];
 int codeNo;
 int studentListSize;
 int studentIndex = 0;
-char newStudentRegNo[20] = "EG/2018/3427";
+char newStudentRegNo[20];// = "EG/2018/3366";
 int readFile();
 void greetings();
 void selectOperation(int codeNo);
@@ -95,7 +95,7 @@ void greetings()
     printf("%s\n%s\n%s\n%s\n%s\n", heading, title, ope1, ope2, ope3);
     printf("Enter code : \n");
     //  scanf("%d", &codeNo);
-    codeNo = 003;
+    codeNo = 001;
     selectOperation(codeNo);
 }
 
@@ -153,10 +153,21 @@ void delete ()
 
 void addStudent()
 {
+    student_marks newStudent;
     printf("Enter student regNo (EG/xxxx/xxxx)\n");
-    printf("Reg No : \n");
-    // scanf("%s", newStudentRegNo);
-    printf("Entered New Student : %s\n", newStudentRegNo);
+    scanf("%s", newStudent.student_index);
+    // printf("Enter student assgnmt01_marks \n");
+    // scanf("%f", &newStudent.assgnmt01_marks);
+    // printf("Enter student assgnmt02_marks \n");
+    // scanf("%f", &newStudent.assgnmt02_marks);
+    // printf("Enter student project marks \n");
+    // scanf("%f", &newStudent.project_marks);
+    // printf("Enter student finalExam marks  \n");
+    // scanf("%f", &newStudent.finalExam_marks);
+
+   // printf("Entered New Student : %s\n",  newStudent.student_index);
+    strcpy(newStudentRegNo ,newStudent.student_index);
+    printf("Entered New Student : %s\n",  newStudentRegNo);
     bool isNewStudent = isExistingStudent();
     if (isNewStudent)
     {
