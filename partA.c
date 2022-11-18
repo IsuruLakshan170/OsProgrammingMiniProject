@@ -8,7 +8,7 @@
 #include <errno.h>
 #include <stdbool.h>
 
-#define listSize 11
+#define listSize 20
 #define fileName "studentMarks1"
 
 typedef struct
@@ -24,7 +24,7 @@ student_marks studentList[listSize];
 int codeNo;
 int studentListSize;
 int studentIndex = 0;
-char newStudentRegNo[20];// = "EG/2018/3366";
+char newStudentRegNo[20]; // = "EG/2018/3366";
 int readFile();
 void greetings();
 void selectOperation(int codeNo);
@@ -74,13 +74,13 @@ int readFile()
         studentList[i] = tempStudent;
 
         studentListSize++;
-        printf("%d read from file : %s %s \n", i+1, tempStudent.student_index, lastStudent.student_index);
+        printf("%d read from file : %s %s \n", i + 1, tempStudent.student_index, lastStudent.student_index);
         if (strcmp(tempStudent.student_index, lastStudent.student_index) == 0)
         {
             break;
         }
     }
-    printf("Read file size : %d\n",studentListSize);
+    printf("Read file size : %d\n", studentListSize);
     close(fd);
 }
 
@@ -156,22 +156,82 @@ void addStudent()
     student_marks newStudent;
     printf("Enter student regNo (EG/xxxx/xxxx)\n");
     scanf("%s", newStudent.student_index);
-    // printf("Enter student assgnmt01_marks \n");
-    // scanf("%f", &newStudent.assgnmt01_marks);
-    // printf("Enter student assgnmt02_marks \n");
-    // scanf("%f", &newStudent.assgnmt02_marks);
-    // printf("Enter student project marks \n");
-    // scanf("%f", &newStudent.project_marks);
-    // printf("Enter student finalExam marks  \n");
-    // scanf("%f", &newStudent.finalExam_marks);
 
-   // printf("Entered New Student : %s\n",  newStudent.student_index);
-    strcpy(newStudentRegNo ,newStudent.student_index);
-    printf("Entered New Student : %s\n",  newStudentRegNo);
+    while (1)
+    {
+        printf("Enter student assgnmt01_marks \n");
+        scanf("%f", &newStudent.assgnmt01_marks);
+        if (newStudent.assgnmt01_marks > 15)
+        {
+            printf("Assgnmt01 marks can't exceed higher than 15 \n");
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    while (1)
+    {
+        printf("Enter student assgnmt02 marks \n");
+        scanf("%f", &newStudent.assgnmt02_marks);
+        if (newStudent.assgnmt02_marks > 15)
+        {
+            printf("Assgnmt02 marks can't exceed higher than 15 \n");
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    while (1)
+    {
+
+        printf("Enter student project marks \n");
+        scanf("%f", &newStudent.project_marks);
+        if (newStudent.project_marks > 20)
+        {
+            printf("project marks  can't exceed higher than 20 \n");
+        }
+        else
+        {
+            break;
+        }
+    }
+  while (1)
+    {
+
+        printf("Enter student finalExam marks  \n");
+        scanf("%f", &newStudent.finalExam_marks);
+        if (newStudent.finalExam_marks > 50)
+        {
+            printf("finalExam  marks  can't exceed higher than 250\n");
+        }
+        else
+        {
+            break;
+        }
+    }
+    
+    //  newStudent.student_index ="EG/2018/3365";
+
+    // printf("Entered New Student : %s\n",  newStudent.student_index);
+    //  strcpy(newStudent.student_index ,"EG/2018/3365");
+    strcpy(newStudentRegNo, newStudent.student_index);
+    printf("Entered New Student : %s\n", newStudentRegNo);
     bool isNewStudent = isExistingStudent();
-    if (isNewStudent)
+    if (!isNewStudent)
     {
         printf("New Student\n");
+
+        studentList[studentListSize] = newStudent;
+        printf("Added new New Student\n");
+        studentListSize++;
+        printStudentList();
+        writeFile();
+        readFile();
+        printStudentList();
     }
     else
     {
@@ -221,13 +281,16 @@ void deleteStudent()
     }
 }
 void printStudentList()
-{   int j=0;
+{
+    int j = 0;
     for (int i = 0; i < studentListSize; i++)
     {
         j++;
-        printf("%d : %s \n", i + 1, studentList[i].student_index);
+        printf("%d\t%s\t%f\t%f\t%f\t%f\n", i + 1, studentList[i].student_index, studentList[i].assgnmt01_marks, studentList[i].assgnmt02_marks, studentList[i].project_marks, studentList[i].finalExam_marks);
+
+        // printf("%d : %s \n", i + 1, studentList[i].student_index);
     }
-    printf("total read from array of student List  size: %d \n",j);
+    printf("total read from array of student List  size: %d \n", j);
 }
 bool isExistingStudent()
 {
@@ -235,14 +298,14 @@ bool isExistingStudent()
     for (int i = 0; i < studentListSize; i++)
     {
 
-       // printf("%d : %s %s\n", i + 1, studentList[i].student_index, newStudentRegNo);
+        // printf("%d : %s %s\n", i + 1, studentList[i].student_index, newStudentRegNo);
         if (!strcmp(studentList[i].student_index, newStudentRegNo))
         {
             //
-           
+
             return true;
         }
-        studentIndex ++;
+        studentIndex++;
     }
     return false;
 }
@@ -270,8 +333,8 @@ void writeFile()
 void removeStudentFromArray()
 {
     printf("Remove student index %d: \n", studentIndex);
-    studentList[studentIndex]=studentList[studentListSize-1];
-    studentListSize --;
-   
+    studentList[studentIndex] = studentList[studentListSize - 1];
+    studentListSize--;
+
     //  listSize =listSize+1;
 }
