@@ -93,9 +93,9 @@ void greetings()
     char ope2[] = "002\tUpdate Student";
     char ope3[] = "003\tDelete Student";
     printf("%s\n%s\n%s\n%s\n%s\n", heading, title, ope1, ope2, ope3);
-    printf("Enter code : \n");
-    //  scanf("%d", &codeNo);
-    codeNo = 001;
+    printf("Enter code : ");
+    scanf("%d", &codeNo);
+    //codeNo = 002;
     selectOperation(codeNo);
 }
 
@@ -157,73 +157,69 @@ void addStudent()
     printf("Enter student regNo (EG/xxxx/xxxx)\n");
     scanf("%s", newStudent.student_index);
 
-    while (1)
-    {
-        printf("Enter student assgnmt01_marks \n");
-        scanf("%f", &newStudent.assgnmt01_marks);
-        if (newStudent.assgnmt01_marks > 15)
-        {
-            printf("Assgnmt01 marks can't exceed higher than 15 \n");
-        }
-        else
-        {
-            break;
-        }
-    }
-
-    while (1)
-    {
-        printf("Enter student assgnmt02 marks \n");
-        scanf("%f", &newStudent.assgnmt02_marks);
-        if (newStudent.assgnmt02_marks > 15)
-        {
-            printf("Assgnmt02 marks can't exceed higher than 15 \n");
-        }
-        else
-        {
-            break;
-        }
-    }
-
-    while (1)
-    {
-
-        printf("Enter student project marks \n");
-        scanf("%f", &newStudent.project_marks);
-        if (newStudent.project_marks > 20)
-        {
-            printf("project marks  can't exceed higher than 20 \n");
-        }
-        else
-        {
-            break;
-        }
-    }
-  while (1)
-    {
-
-        printf("Enter student finalExam marks  \n");
-        scanf("%f", &newStudent.finalExam_marks);
-        if (newStudent.finalExam_marks > 50)
-        {
-            printf("finalExam  marks  can't exceed higher than 250\n");
-        }
-        else
-        {
-            break;
-        }
-    }
-    
-    //  newStudent.student_index ="EG/2018/3365";
-
-    // printf("Entered New Student : %s\n",  newStudent.student_index);
-    //  strcpy(newStudent.student_index ,"EG/2018/3365");
     strcpy(newStudentRegNo, newStudent.student_index);
-    printf("Entered New Student : %s\n", newStudentRegNo);
+   // printf("Entered New Student : %s\n", newStudentRegNo);
     bool isNewStudent = isExistingStudent();
     if (!isNewStudent)
     {
         printf("New Student\n");
+
+        while (1)
+        {
+            printf("Enter student assgnmt01_marks \n");
+            scanf("%f", &newStudent.assgnmt01_marks);
+            if (newStudent.assgnmt01_marks > 15)
+            {
+                printf("Assgnmt01 marks can't exceed higher than 15 \n");
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        while (1)
+        {
+            printf("Enter student assgnmt02 marks \n");
+            scanf("%f", &newStudent.assgnmt02_marks);
+            if (newStudent.assgnmt02_marks > 15)
+            {
+                printf("Assgnmt02 marks can't exceed higher than 15 \n");
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        while (1)
+        {
+
+            printf("Enter student project marks \n");
+            scanf("%f", &newStudent.project_marks);
+            if (newStudent.project_marks > 20)
+            {
+                printf("project marks  can't exceed higher than 20 \n");
+            }
+            else
+            {
+                break;
+            }
+        }
+        while (1)
+        {
+
+            printf("Enter student finalExam marks  \n");
+            scanf("%f", &newStudent.finalExam_marks);
+            if (newStudent.finalExam_marks > 50)
+            {
+                printf("finalExam  marks  can't exceed higher than 250\n");
+            }
+            else
+            {
+                break;
+            }
+        }
 
         studentList[studentListSize] = newStudent;
         printf("Added new New Student\n");
@@ -241,26 +237,95 @@ void addStudent()
 
 void updateStudent()
 {
+    student_marks newStudent;
+
     printf("Enter student regNo (EG/xxxx/xxxx)\n");
     printf("Reg No : ");
-    scanf("%s", newStudentRegNo);
-    printf("Entered the Student : %s\n", newStudentRegNo);
+    scanf("%s", newStudent.student_index);
+    strcpy(newStudentRegNo, newStudent.student_index);
+
+  //  printf("Entered the Student : %s\n", newStudent.student_index);
     bool isNewStudent = isExistingStudent();
-    if (isNewStudent)
+    if (!isNewStudent)
     {
         printf("This Student not in list\n"); // can not do process
     }
     else
     {
-        printf("Existing student\n"); // can do process
+        printf("This Student in the list you can update this student\n"); // can do process
+
+        while (1)
+        {
+            printf("Enter student assgnmt01_marks \n");
+            scanf("%f", &newStudent.assgnmt01_marks);
+            if (newStudent.assgnmt01_marks > 15)
+            {
+                printf("Assgnmt01 marks can't exceed higher than 15 \n");
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        while (1)
+        {
+            printf("Enter student assgnmt02 marks \n");
+            scanf("%f", &newStudent.assgnmt02_marks);
+            if (newStudent.assgnmt02_marks > 15)
+            {
+                printf("Assgnmt02 marks can't exceed higher than 15 \n");
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        while (1)
+        {
+
+            printf("Enter student project marks \n");
+            scanf("%f", &newStudent.project_marks);
+            if (newStudent.project_marks > 20)
+            {
+                printf("project marks  can't exceed higher than 20 \n");
+            }
+            else
+            {
+                break;
+            }
+        }
+        while (1)
+        {
+
+            printf("Enter student finalExam marks  \n");
+            scanf("%f", &newStudent.finalExam_marks);
+            if (newStudent.finalExam_marks > 50)
+            {
+                printf("finalExam  marks  can't exceed higher than 250\n");
+            }
+            else
+            {
+                break;
+            }
+        }
+        studentList[studentIndex] = newStudent;
+        printf("Successully updated Existing  Student\n");
+       
+        printStudentList();
+        writeFile();
+        readFile();
+        printStudentList();
+
     }
 }
 void deleteStudent()
 {
     printf("Enter student regNo (EG/xxxx/xxxx)\n");
     printf("Reg No : ");
-    // scanf("%s", newStudentRegNo);
-    //  newStudentRegNo[20] ="EG/2018/3365";
+    scanf("%s", newStudentRegNo);
+
     printf("Entered Student No: %s\n", newStudentRegNo);
     bool isNewStudent = isExistingStudent();
     if (!isNewStudent)
