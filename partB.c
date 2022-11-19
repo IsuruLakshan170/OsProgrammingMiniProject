@@ -32,11 +32,9 @@ float minMarks(student_marks *arry, int size);
 float averageMarks(student_marks *arry, int size);
 int studentAbovePercentage(student_marks *arry, int size);
 
-
-
 int main()
 {
-   
+
     key_t ky = ftok("file.txt", 78); // use to generate a unique key
     if (ky == -1)
     {
@@ -61,7 +59,7 @@ int main()
         exit(0);
     }
     else if (PID1 == 0)
-    {                 // child 1
+    {                 // child 1 process
         sleep(0.001); // suspend the process
 
         printf("Child 1 Id : %d  Parent Id : %d\n", getpid(), getppid());
@@ -74,15 +72,15 @@ int main()
             printf("Error No: %d\n", errno);
             exit(1);
         }
-        float *parentPtr2;
-        parentPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-        if (parentPtr2 == (float *)-1)
+        float *childPtr2;
+        childPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
+        if (childPtr2 == (float *)-1)
         {
             perror("parent shmat error: ");
             printf("Error No: %d\n", errno);
             exit(1);
         }
-        int arraySize = (int)*(parentPtr2 + 0);
+        int arraySize = (int)*(childPtr2 + 0);
         //  printf("---------------->size:%d\n",arraySize);
         float maximumMarks = maxMarks(childPtr1, arraySize);
 
@@ -96,10 +94,10 @@ int main()
         }
         // child 1 write ------------------
 
-        parentPtr2[1] = maximumMarks;
+        childPtr2[1] = maximumMarks;
 
-        int childDt = shmdt((void *)parentPtr2); // detaches the shared memory segments individually
-        if (childDt == -1)
+        int childDt2 = shmdt((void *)childPtr2); // detaches the shared memory segments individually
+        if (childDt2 == -1)
         {
             perror("child 1 shmdt 2 error : ");
             printf("Error No: %d\n", errno);
@@ -119,36 +117,51 @@ int main()
         }
         else if (PID2 == 0)
         {
-            // child 2
+            // child 2 process
             // read -----
             printf("Child 2 Id : %d  Parent Id : %d\n", getpid(), getppid());
-
-            student_marks *childPtr2;
-            childPtr2 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-            if (childPtr2 == (void *)-1)
+            student_marks *childPtr1;
+            childPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
+            if (childPtr1 == (void *)-1)
             {
                 perror("child shmat error: ");
                 printf("Error No: %d\n", errno);
                 exit(1);
             }
-            float *parentPtr3;
-            parentPtr3 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-            if (parentPtr3 == (float *)-1)
+            float *childPtr2;
+            childPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
+            if (childPtr2 == (float *)-1)
             {
                 perror("parent shmat error: ");
                 printf("Error No: %d\n", errno);
                 exit(1);
             }
-            int arraySize = (int)*(parentPtr3 + 0);
+            int arraySize = (int)*(childPtr2 + 0);
 
-            float minValue = minMarks(childPtr2, arraySize);
+            float minValue = minMarks(childPtr1, arraySize);
 
             //  printf("lowest marks %f \n", minValue);
 
             //--child 2 write
 
-            parentPtr3[2] = minValue;
+            childPtr2[2] = minValue;
+
             printf("child 2 closed\n");
+
+            int childDt1 = shmdt((void *)childPtr1); // detaches the shared memory segments individually
+            if (childDt1 == -1)
+            {
+                perror("child shmdt error 1: ");
+                printf("Error No: %d\n", errno);
+                exit(0);
+            }
+            int childDt2 = shmdt((void *)childPtr2); // detaches the shared memory segments individually
+            if (childDt2 == -1)
+            {
+                perror("child 1 shmdt 2 error : ");
+                printf("Error No: %d\n", errno);
+                exit(0);
+            }
         }
         else
         {
@@ -161,37 +174,52 @@ int main()
                 exit(0);
             }
             else if (PID3 == 0)
-            { // child 3
+            { // child 3 process
                 printf("Child 3 Id : %d  Parent Id : %d\n", getpid(), getppid());
                 // read------
-                student_marks *childPtr3;
-                childPtr3 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-                if (childPtr3 == (void *)-1)
+                student_marks *childPtr1;
+                childPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
+                if (childPtr1 == (void *)-1)
                 {
                     perror("child shmat error: ");
                     printf("Error No: %d\n", errno);
                     exit(1);
                 }
-                float *parentPtr2;
-                parentPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-                if (parentPtr2 == (float *)-1)
+                float *childPtr2;
+                childPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
+                if (childPtr2 == (float *)-1)
                 {
                     perror("parent shmat error: ");
                     printf("Error No: %d\n", errno);
                     exit(1);
                 }
-                int arraySize = (int)*(parentPtr2 + 0);
+                int arraySize = (int)*(childPtr2 + 0);
                 float average;
-                average = averageMarks(childPtr3, arraySize);
+                average = averageMarks(childPtr1, arraySize);
 
                 // write----
 
-                parentPtr2[3] = average;
+                childPtr2[3] = average;
                 printf("Child 3 closed\n");
+
+                int childDt1 = shmdt((void *)childPtr1); // detaches the shared memory segments individually
+                if (childDt1 == -1)
+                {
+                    perror("child shmdt error 1: ");
+                    printf("Error No: %d\n", errno);
+                    exit(0);
+                }
+                int childDt2 = shmdt((void *)childPtr2); // detaches the shared memory segments individually
+                if (childDt2 == -1)
+                {
+                    perror("child 1 shmdt 2 error : ");
+                    printf("Error No: %d\n", errno);
+                    exit(0);
+                }
             }
             else
             {
-                // parent process
+                // parent 1 process
                 printf("Parent id : %d\n", getpid());
 
                 // read from file
@@ -220,13 +248,12 @@ int main()
                         break;
                     }
                 }
-                printf("Read file size : %d\n", studentListSize);
+
                 close(fd);
 
-                
-                student_marks *parentPtr;
-                parentPtr = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-                if (parentPtr == (student_marks *)-1)
+                student_marks *parentPtr1;
+                parentPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
+                if (parentPtr1 == (student_marks *)-1)
                 {
                     perror("parent shmat error: ");
                     printf("Error No: %d\n", errno);
@@ -234,19 +261,19 @@ int main()
                 }
                 for (int i = 0; i < studentListSize; i++)
                 {
-                    parentPtr[i] = studentList[i];
+                    parentPtr1[i] = studentList[i];
                 }
 
-                float *childPtrResults;
-                childPtrResults = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-                if (childPtrResults == (void *)-1)
+                float *parentPtr2;
+                parentPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
+                if (parentPtr2 == (void *)-1)
                 {
                     perror("child shmat error: ");
                     printf("Error No: %d\n", errno);
                     exit(1);
                 }
 
-                childPtrResults[0] = studentListSize;
+                parentPtr2[0] = studentListSize;
 
                 printf("parent write to shared memory finished \n");
 
@@ -258,18 +285,25 @@ int main()
                 printf("parent read \n");
 
                 // 10%above number of students
-                int arraySize = (int)*(childPtrResults + 0);
-                int studentCount = studentAbovePercentage(parentPtr, arraySize);
+                int arraySize = (int)*(parentPtr2 + 0);
+                int studentCount = studentAbovePercentage(parentPtr1, arraySize);
 
-                printf("From child 1 hightest marks %f\n", *(childPtrResults + 1));
-                printf("From child 2 lowest marks %f\n", *(childPtrResults + 2));
-                printf("From child 3 average  marks %f\n", *(childPtrResults + 3));
-                printf("Parent process number of student higher than 10 Percent : %d\n", studentCount);
+                printf("From child 1 : Hightest marks : %f\n", *(parentPtr2 + 1));
+                printf("From child 2 : Lowest marks   : %f\n", *(parentPtr2 + 2));
+                printf("From child 3 : Average marks  : %f\n", *(parentPtr2 + 3));
+                printf("From parent 1: Number of student higher than 10 Percent : %d\n", studentCount);
                 //   printf("Size of student list:------%d\n", (int)*(childPtrResults + 0));
                 printf("parent process finished \n");
 
-                int parntDt = shmdt((void *)parentPtr); // detaches the shared memory segments individually
-                if (parntDt == -1)
+                int parntDt1 = shmdt((void *)parentPtr1); // detaches the shared memory segments individually
+                if (parntDt1 == -1)
+                {
+                    perror("parent shmdt error: ");
+                    printf("Error No: %d\n", errno);
+                    exit(0);
+                }
+                 int parntDt2 = shmdt((void *)parentPtr2); // detaches the shared memory segments individually
+                if (parntDt2 == -1)
                 {
                     perror("parent shmdt error: ");
                     printf("Error No: %d\n", errno);
@@ -286,68 +320,6 @@ int main()
         }
     }
 }
-/*
-int readFile()
-{
-    studentListSize = 0;
-    int fd;
-
-    fd = open(fileName, O_RDONLY);
-    student_marks lastStudent;
-    student_marks tempStudent;
-    lseek(fd, -sizeof(lastStudent), SEEK_END);
-    read(fd, &lastStudent, sizeof(lastStudent));
-    lseek(fd, 0, SEEK_SET);
-
-    for (int i = 0; i < listSize; i++)
-    {
-        read(fd, &tempStudent, sizeof(tempStudent));
-
-        studentList[i] = tempStudent;
-
-        studentListSize++;
-        // printf("%d read from file : %s %s \n", i + 1, tempStudent.student_index, lastStudent.student_index);
-        if (strcmp(tempStudent.student_index, lastStudent.student_index) == 0)
-        {
-            break;
-        }
-    }
-    printf("Read file size : %d\n", studentListSize);
-    close(fd);
-}*/
-/*
-void printStudentList()
-{
-    int j = 0;
-    for (int i = 0; i < studentListSize; i++)
-    {
-        j++;
-        printf("%d\t%s\t%f\t%f\t%f\t%f\n", i + 1, studentList[i].student_index, studentList[i].assgnmt01_marks, studentList[i].assgnmt02_marks, studentList[i].project_marks, studentList[i].finalExam_marks);
-
-        // printf("%d : %s \n", i + 1, studentList[i].student_index);
-    }
-    printf("total read from array of student List  size: %d \n", j);
-}
-*/
-/*
-void displayAssignment01Marks()
-{
-    for (int i = 0; i < studentListSize; i++)
-    {
-        printf("%d %s %f \n", i + 1, studentList[i].student_index, studentList[i].assgnmt02_marks);
-    }
-}
-*/
-/*
-int sizeOfArray(student_marks *arry)
-{
-    printf("----------------------- test array ---------------\n");
-    for (int i = 0; i < 103; i++)
-    {
-        printf("%d  %f \n", i + 1, (arry[i].assgnmt02_marks));
-    }
-}
-*/
 float maxMarks(student_marks *arry, int size)
 {
 
@@ -406,7 +378,6 @@ int studentAbovePercentage(student_marks *arry, int size)
     int studentCount = 0;
     for (int i = 0; i < size; i++)
     {
-
         if (marginalMarks < arry[i].assgnmt02_marks)
         {
             studentCount++;
