@@ -25,7 +25,8 @@ typedef struct
 int readFile();
 void printStudentList();
 void displayAssignment01Marks();
-void maxMarks(student_marks arry);
+int sizeOfArray(student_marks *arry);
+void maxMarks(student_marks *arry);
 void minMarks();
 void averageMarks();
 void studentAbovePercentage();
@@ -74,7 +75,10 @@ int main()
             printf("Error No: %d\n", errno);
             exit(1);
         }
-
+        // call function
+        int listsize = sizeOfArray(childPtr1);
+      // int size = sizeof(&childPtr1)/sizeof(childPtr1[0]);
+       // printf("----------------->>>> List Size: %d\n",size);
         // find maximum -------------------------
 
         float maxMarks = 0;
@@ -235,6 +239,18 @@ int main()
                 {
                     parentPtr[i] = studentList[i];
                 }
+                float *parentPtr2;
+                parentPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
+                if (parentPtr2 == (float *)-1)
+                {
+                    perror("parent shmat error: ");
+                    printf("Error No: %d\n", errno);
+                    exit(1);
+                }
+
+                parentPtr2[0] = studentListSize;
+
+
 
                 printf("parent write to shared memory finished \n");
 
@@ -253,7 +269,7 @@ int main()
                     printf("Error No: %d\n", errno);
                     exit(1);
                 }
-                //10%above number of students
+                // 10%above number of students
                 float marginalMarks = 6;
                 int studentCount = 0;
                 for (int i = 0; i < studentListSize; i++)
@@ -262,14 +278,13 @@ int main()
                     if (marginalMarks < studentList[i].assgnmt02_marks)
                     {
                         studentCount++;
-                       
                     }
                 }
-                printf("From child 1 hightest marks %f\n", *childPtrResults);
-                printf("From child 2 lowest marks %f\n", *(childPtrResults + 1));
-                printf("From child 3 average  marks %f\n", *(childPtrResults + 2));
+                printf("From child 1 hightest marks %f\n", *childPtrResults+1);
+                printf("From child 2 lowest marks %f\n", *(childPtrResults + 2));
+                printf("From child 3 average  marks %f\n", *(childPtrResults + 3));
                 printf("Parent process number of student higher than 10 Percent : %d\n", studentCount);
-
+                printf("Size of student list:------%d\n", (int)*(childPtrResults + 0));
                 printf("parent process finished \n");
 
                 int parntDt = shmdt((void *)parentPtr); // detaches the shared memory segments individually
@@ -367,23 +382,34 @@ void displayAssignment01Marks()
     }
 }
 
-void maxMarks(student_marks arry)
+
+int sizeOfArray(student_marks *arry)
+{
+ printf("----------------------- test array ---------------\n");
+    for (int i = 0; i < 103; i++)
+    {
+        printf("%d  %f \n",i+1, (arry[i].assgnmt02_marks));
+    }
+}
+void maxMarks(student_marks *arry)
 {
 
+   
     // student_marks studentMarks[listSize] = arry;
-    float maxMarks = 0;
-    char studentNo[20];
-    int index = 0;
-    for (int i = 0; i < studentListSize; i++)
-    {
-        if (maxMarks < studentList[i].assgnmt02_marks)
-        {
-            index = i;
-            maxMarks = studentList[i].assgnmt02_marks;
-        }
-        printf("%d %s %f \n", i + 1, studentList[i].student_index, studentList[i].assgnmt02_marks);
-    }
-    printf("%s has highest marks %f \n", studentList[index].student_index, maxMarks);
+    /*  float maxMarks = 0;
+      char studentNo[20];
+      int index = 0;
+      for (int i = 0; i < studentListSize; i++)
+      {
+          if (maxMarks < studentList[i].assgnmt02_marks)
+          {
+              index = i;
+              maxMarks = studentList[i].assgnmt02_marks;
+          }
+          printf("%d %s %f \n", i + 1, studentList[i].student_index, studentList[i].assgnmt02_marks);
+      }
+      printf("%s has highest marks %f \n", studentList[index].student_index, maxMarks);
+      */
 }
 
 void minMarks()
