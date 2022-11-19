@@ -13,6 +13,7 @@
 
 #define listSize 100
 #define fileName "studentMarks1"
+
 typedef struct
 {
     char student_index[20]; // EG/XXXX/XXXX
@@ -32,12 +33,10 @@ float averageMarks(student_marks *arry, int size);
 int studentAbovePercentage(student_marks *arry, int size);
 
 
-int studentListSize;
 
 int main()
 {
-    //  readFile();
-    // printStudentList();
+   
     key_t ky = ftok("file.txt", 78); // use to generate a unique key
     if (ky == -1)
     {
@@ -197,6 +196,7 @@ int main()
 
                 // read from file
                 student_marks studentList[listSize];
+                int studentListSize;
                 studentListSize = 0;
                 int fd;
 
