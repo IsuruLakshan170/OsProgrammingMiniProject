@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 #define listSize 100
 #define fileName "studentMarks1"
@@ -44,6 +45,7 @@ int getStudentListSize();
 void printStudentList();
 void backToMenu();
 void addAllStudentMarks();
+bool isRegNoCorrect(char *name);
 
 int main()
 {
@@ -51,7 +53,7 @@ int main()
 
     if (studentListSize < listSize)
     {
-        printf("Student list lower than %d\n", listSize);
+
         greetings();
     }
     else
@@ -164,7 +166,7 @@ void selectOperation(int index)
 
 void insert()
 {
-    printf("Insert\n");
+
     readFile();
     if (studentListSize == listSize)
     {
@@ -177,20 +179,31 @@ void insert()
 }
 void update()
 {
-    printf("update\n");
     updateStudent();
 }
 void delete ()
 {
-    printf("delete\n");
     deleteStudent();
 }
 
 void addStudent()
 {
     student_marks newStudent;
-    printf("Enter student regNo (EG/xxxx/xxxx)\n");
-    scanf("%s", newStudent.student_index);
+    while (1)
+    {
+        printf("Enter student regNo (EG/xxxx/xxxx) : ");
+        scanf("%s", newStudent.student_index);
+
+        bool isCheck = isRegNoCorrect(newStudent.student_index);
+        if (isCheck)
+        {
+            break;
+        }
+        else
+        {
+            printf("Entered Student Registraion Number in correct Format!.Try again\n");
+        }
+    }
 
     strcpy(newStudentRegNo, newStudent.student_index);
     // printf("Entered New Student : %s\n", newStudentRegNo);
@@ -274,9 +287,21 @@ void updateStudent()
 {
     student_marks newStudent;
 
-    printf("Enter student regNo (EG/xxxx/xxxx)\n");
-    printf("Reg No : ");
-    scanf("%s", newStudent.student_index);
+    while (1)
+    {
+        printf("Enter student regNo (EG/xxxx/xxxx) : ");
+        scanf("%s", newStudent.student_index);
+
+        bool isCheck = isRegNoCorrect(newStudent.student_index);
+        if (isCheck)
+        {
+            break;
+        }
+        else
+        {
+            printf("Entered Student Registraion Number in correct Format!.Try again\n");
+        }
+    }
     strcpy(newStudentRegNo, newStudent.student_index);
 
     //  printf("Entered the Student : %s\n", newStudent.student_index);
@@ -291,7 +316,7 @@ void updateStudent()
 
         while (1)
         {
-            printf("Enter student assgnmt01_marks \n");
+            printf("Enter student assgnmt01_marks : ");
             scanf("%f", &newStudent.assgnmt01_marks);
             if (newStudent.assgnmt01_marks > 15)
             {
@@ -305,7 +330,7 @@ void updateStudent()
 
         while (1)
         {
-            printf("Enter student assgnmt02 marks \n");
+            printf("Enter student assgnmt02 marks : ");
             scanf("%f", &newStudent.assgnmt02_marks);
             if (newStudent.assgnmt02_marks > 15)
             {
@@ -320,7 +345,7 @@ void updateStudent()
         while (1)
         {
 
-            printf("Enter student project marks \n");
+            printf("Enter student project marks : ");
             scanf("%f", &newStudent.project_marks);
             if (newStudent.project_marks > 20)
             {
@@ -334,7 +359,7 @@ void updateStudent()
         while (1)
         {
 
-            printf("Enter student finalExam marks  \n");
+            printf("Enter student finalExam marks  : ");
             scanf("%f", &newStudent.finalExam_marks);
             if (newStudent.finalExam_marks > 50)
             {
@@ -346,7 +371,7 @@ void updateStudent()
             }
         }
         studentList[studentIndex] = newStudent;
-        printf("Successully updated Existing  Student\n");
+        printf("Successully updated Existing Student\n");
 
         writeFile();
         readFile();
@@ -354,9 +379,23 @@ void updateStudent()
 }
 void deleteStudent()
 {
-    printf("Enter student regNo (EG/xxxx/xxxx)\n");
-    printf("Reg No : ");
-    scanf("%s", newStudentRegNo);
+    student_marks newStudent;
+
+    while (1)
+    {
+        printf("Enter student regNo (EG/xxxx/xxxx) : ");
+        scanf("%s", newStudent.student_index);
+
+        bool isCheck = isRegNoCorrect(newStudent.student_index);
+        if (isCheck)
+        {
+            break;
+        }
+        else
+        {
+            printf("Entered Student Registraion Number in correct Format!.Try again\n");
+        }
+    }
 
     printf("Entered Student No: %s\n", newStudentRegNo);
     bool isNewStudent = isExistingStudent();
@@ -469,12 +508,27 @@ void addAllStudentMarks()
 
         student_marks newStudent;
         int i = 0;
-        while (i < 5)
+        while (i < listSize)
         {
-            printf("Enter %d student regNo (EG/xxxx/xxxx) : ", i+1);
-            scanf("%s", newStudent.student_index);
+            
+            while (1)
+            {
+                printf("Enter %d student regNo (EG/xxxx/xxxx) : ",i+1);
+                scanf("%s", newStudent.student_index);
+
+                bool isCheck = isRegNoCorrect(newStudent.student_index);
+                if (isCheck)
+                {
+                    break;
+                }
+                else
+                {
+                    printf("Entered Student Registraion Number in correct Format!.Try again\n");
+                }
+            }
+
             strcpy(newStudentRegNo, newStudent.student_index);
-            bool isNewStudent =  isExistingStudent();
+            bool isNewStudent = isExistingStudent();
             if (!isNewStudent)
             {
 
@@ -534,7 +588,7 @@ void addAllStudentMarks()
                         break;
                     }
                 }
-                
+
                 studentList[i] = newStudent;
                 i++;
                 studentListSize++;
@@ -558,4 +612,43 @@ void addAllStudentMarks()
         printf("Please enter valid command !\n");
         addAllStudentMarks();
     }
+}
+
+bool isRegNoCorrect(char *name)
+{
+    bool isFormatTrue = true;
+    char val2;
+    for (int i = 0; name[i] != '\0'; i++)
+    {
+        val2 = name[i];
+        if (isdigit(val2))
+        {
+        }
+        else
+        {
+            if (i == 0 && val2 == 'E')
+            {
+            }
+            else if (i == 1 && val2 == 'G')
+            {
+            }
+            else if ((i == 2 || i == 7) && (val2 == '/'))
+            {
+            }
+            else
+            {
+                isFormatTrue = false;
+                break;
+            }
+        }
+    }
+    int i;
+    for (i = 0; name[i] != '\0'; ++i)
+        ;
+    if (i != 12)
+    {
+        isFormatTrue = false;
+    }
+
+    return isFormatTrue;
 }
