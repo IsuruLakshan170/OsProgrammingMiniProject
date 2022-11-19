@@ -28,6 +28,9 @@ int codeNo;
 
 int studentIndex = 0;
 char newStudentRegNo[20]; // = "EG/2018/3366";
+void yellow();
+void red();
+void reset();
 int readFile();
 void greetings();
 void selectOperation(int codeNo);
@@ -50,17 +53,7 @@ bool isRegNoCorrect(char *name);
 int main()
 {
     readFile();
-
-    if (studentListSize < listSize)
-    {
-
-        greetings();
-    }
-    else
-    {
-        printf("Student list full \n");
-        greetings();
-    }
+    greetings();
 }
 int readFile()
 {
@@ -101,21 +94,35 @@ void greetings()
     char ope3[] = "003\tDelete Student";
     char ope4[] = "004\tAdd Student All Student Marks";
     char ope5[] = "005\tShow Student Marks";
-
+   
     while (1)
-    {
-        printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n", heading, title, ope1, ope2, ope3, ope4, ope5);
+    {   codeNo =001;
+        red();
+        printf("--------------------------------------------\n");
+        reset();
+        printf("%s\n",heading);
+        yellow();
+        printf("%s\n",title);
+        reset();
+        
+        printf("%s\n%s\n%s\n%s\n%s\n",ope1, ope2, ope3, ope4, ope5);
+        red();
+        printf("--------------------------------------------\n");
+        reset();
         printf("Enter code : ");
         scanf("%d", &codeNo);
-        // codeNo = 002;
+       
         if (codeNo == 001 || codeNo == 002 || codeNo == 003 || codeNo == 004 || codeNo == 005)
         {
             selectOperation(codeNo);
+            break;
         }
         else
-        {
+        {   red();
             printf("You Entered Code is Incorrect! Try Gain\n");
+           reset();
         }
+        sleep(1);
     }
 }
 
@@ -156,8 +163,9 @@ void selectOperation(int index)
     }
 
     default:
-    {
+    {   red();
         printf("Invalid error Code\n");
+        reset();
         greetings();
         break;
     }
@@ -169,8 +177,9 @@ void insert()
 
     readFile();
     if (studentListSize == listSize)
-    {
+    {   red();
         printf("Student List is full\n");
+        reset();
     }
     else
     {
@@ -200,8 +209,9 @@ void addStudent()
             break;
         }
         else
-        {
+        { red();
             printf("Entered Student Registraion Number in correct Format!.Try again\n");
+             reset();
         }
     }
 
@@ -217,8 +227,9 @@ void addStudent()
             printf("Enter student assgnmt01_marks \n");
             scanf("%f", &newStudent.assgnmt01_marks);
             if (newStudent.assgnmt01_marks > 15)
-            {
+            {red();
                 printf("Assgnmt01 marks can't exceed higher than 15 \n");
+                reset();
             }
             else
             {
@@ -231,8 +242,9 @@ void addStudent()
             printf("Enter student assgnmt02 marks \n");
             scanf("%f", &newStudent.assgnmt02_marks);
             if (newStudent.assgnmt02_marks > 15)
-            {
+            {red();
                 printf("Assgnmt02 marks can't exceed higher than 15 \n");
+                reset();
             }
             else
             {
@@ -246,8 +258,9 @@ void addStudent()
             printf("Enter student project marks \n");
             scanf("%f", &newStudent.project_marks);
             if (newStudent.project_marks > 20)
-            {
+            {red();
                 printf("project marks  can't exceed higher than 20 \n");
+                reset();
             }
             else
             {
@@ -260,8 +273,9 @@ void addStudent()
             printf("Enter student finalExam marks  \n");
             scanf("%f", &newStudent.finalExam_marks);
             if (newStudent.finalExam_marks > 50)
-            {
+            {red();
                 printf("finalExam  marks  can't exceed higher than 250\n");
+                reset();
             }
             else
             {
@@ -270,7 +284,9 @@ void addStudent()
         }
 
         studentList[studentListSize] = newStudent;
+        yellow();
         printf("Added new New Student\n");
+        reset();
         studentListSize++;
         printStudentList();
         writeFile();
@@ -278,8 +294,9 @@ void addStudent()
         printStudentList();
     }
     else
-    {
+    {red();
         printf("Existing student\n");
+        reset();
     }
 }
 
@@ -298,8 +315,9 @@ void updateStudent()
             break;
         }
         else
-        {
+        {red();
             printf("Entered Student Registraion Number in correct Format!.Try again\n");
+            reset();
         }
     }
     strcpy(newStudentRegNo, newStudent.student_index);
@@ -307,8 +325,9 @@ void updateStudent()
     //  printf("Entered the Student : %s\n", newStudent.student_index);
     bool isNewStudent = isExistingStudent();
     if (!isNewStudent)
-    {
+    {red();
         printf("This Student not in list\n"); // can not do process
+        reset();
     }
     else
     {
@@ -319,8 +338,9 @@ void updateStudent()
             printf("Enter student assgnmt01_marks : ");
             scanf("%f", &newStudent.assgnmt01_marks);
             if (newStudent.assgnmt01_marks > 15)
-            {
+            {red();
                 printf("Assgnmt01 marks can't exceed higher than 15 \n");
+                 reset () ;
             }
             else
             {
@@ -333,8 +353,9 @@ void updateStudent()
             printf("Enter student assgnmt02 marks : ");
             scanf("%f", &newStudent.assgnmt02_marks);
             if (newStudent.assgnmt02_marks > 15)
-            {
+            {red();
                 printf("Assgnmt02 marks can't exceed higher than 15 \n");
+                reset();
             }
             else
             {
@@ -348,8 +369,9 @@ void updateStudent()
             printf("Enter student project marks : ");
             scanf("%f", &newStudent.project_marks);
             if (newStudent.project_marks > 20)
-            {
+            {red();
                 printf("project marks  can't exceed higher than 20 \n");
+                reset();
             }
             else
             {
@@ -362,8 +384,9 @@ void updateStudent()
             printf("Enter student finalExam marks  : ");
             scanf("%f", &newStudent.finalExam_marks);
             if (newStudent.finalExam_marks > 50)
-            {
+            {red();
                 printf("finalExam  marks  can't exceed higher than 250\n");
+                reset();
             }
             else
             {
@@ -371,8 +394,9 @@ void updateStudent()
             }
         }
         studentList[studentIndex] = newStudent;
+        yellow();
         printf("Successully updated Existing Student\n");
-
+reset();
         writeFile();
         readFile();
     }
@@ -392,25 +416,29 @@ void deleteStudent()
             break;
         }
         else
-        {
+        {red();
             printf("Entered Student Registraion Number in correct Format!.Try again\n");
+            reset();
         }
     }
 
-    printf("Entered Student No: %s\n", newStudentRegNo);
+  //  printf("Entered Student No: %s\n", newStudentRegNo);
     bool isNewStudent = isExistingStudent();
     if (!isNewStudent)
-    {
+    {red();
         printf("This Student not in list can not delete\n");
+        reset();
     }
     else
     {
-        printf("This Student  in list can  delete\n");
+       
         // printf("Existing student %s delete successfully \n", newStudentRegNo);
 
         printf("index : %d\n", studentIndex);
         removeStudentFromArray();
-
+        yellow();
+        printf("The Student  delete successfully\n");
+        reset();
         writeFile();
         readFile();
     }
@@ -418,7 +446,9 @@ void deleteStudent()
 void printStudentList()
 {
     int j = 0;
+    yellow();
     printf("No\tStudent RegNo\tAssignment 1 marks\tAssignment 2 marks\tProject Marks\tFinal Exam Marks\n");
+    reset();
     for (int i = 0; i < studentListSize; i++)
     {
         j++;
@@ -468,8 +498,9 @@ void writeFile()
 }
 
 void removeStudentFromArray()
-{
+{   yellow();
     printf("Remove student index %d: \n", studentIndex);
+    reset();
     studentList[studentIndex] = studentList[studentListSize - 1];
     studentListSize--;
 
@@ -486,12 +517,14 @@ void backToMenu()
         greetings();
     }
     else if (!strcmp(userInput, "N") || !strcmp(userInput, "n"))
-    {
+    {yellow();
         printf("programe closed!\n");
+        reset();
     }
     else
-    {
+    {   red();
         printf("Please enter valid command !\n");
+        reset();
         backToMenu();
     }
 }
@@ -499,7 +532,9 @@ void backToMenu()
 void addAllStudentMarks()
 {
     char userInput[5];
+    red();
     printf("All the previous data will remove before adding new data!.Are you sure want to add all the data? (Y or N) : ");
+    reset();
     scanf("%s", userInput);
     if (!strcmp(userInput, "Y") || !strcmp(userInput, "y"))
     {
@@ -510,10 +545,10 @@ void addAllStudentMarks()
         int i = 0;
         while (i < listSize)
         {
-            
+
             while (1)
             {
-                printf("Enter %d student regNo (EG/xxxx/xxxx) : ",i+1);
+                printf("Enter %d student regNo (EG/xxxx/xxxx) : ", i + 1);
                 scanf("%s", newStudent.student_index);
 
                 bool isCheck = isRegNoCorrect(newStudent.student_index);
@@ -522,8 +557,9 @@ void addAllStudentMarks()
                     break;
                 }
                 else
-                {
+                {   red();
                     printf("Entered Student Registraion Number in correct Format!.Try again\n");
+                    reset();
                 }
             }
 
@@ -537,8 +573,9 @@ void addAllStudentMarks()
                     printf("Enter student assgnmt01_marks : ");
                     scanf("%f", &newStudent.assgnmt01_marks);
                     if (newStudent.assgnmt01_marks > 15)
-                    {
+                    {   red();
                         printf("Assgnmt01 marks can't exceed higher than 15 \n");
+                        reset();
                     }
                     else
                     {
@@ -551,8 +588,9 @@ void addAllStudentMarks()
                     printf("Enter student assgnmt02 marks : ");
                     scanf("%f", &newStudent.assgnmt02_marks);
                     if (newStudent.assgnmt02_marks > 15)
-                    {
+                    {red();
                         printf("Assgnmt02 marks can't exceed higher than 15 \n");
+                        reset();
                     }
                     else
                     {
@@ -566,8 +604,9 @@ void addAllStudentMarks()
                     printf("Enter student project marks : ");
                     scanf("%f", &newStudent.project_marks);
                     if (newStudent.project_marks > 20)
-                    {
+                    {red();
                         printf("project marks  can't exceed higher than 20 \n");
+                        reset();
                     }
                     else
                     {
@@ -580,8 +619,9 @@ void addAllStudentMarks()
                     printf("Enter student finalExam marks : ");
                     scanf("%f", &newStudent.finalExam_marks);
                     if (newStudent.finalExam_marks > 50)
-                    {
+                    {red();
                         printf("finalExam  marks  can't exceed higher than 250\n");
+                        reset();
                     }
                     else
                     {
@@ -608,8 +648,9 @@ void addAllStudentMarks()
         backToMenu();
     }
     else
-    {
+    {red();
         printf("Please enter valid command !\n");
+        reset();
         addAllStudentMarks();
     }
 }
@@ -652,3 +693,16 @@ bool isRegNoCorrect(char *name)
 
     return isFormatTrue;
 }
+
+void red () {
+  printf("\033[1;31m");
+}
+
+void yellow (){
+  printf("\033[1;33m");
+}
+
+void reset () {
+  printf("\033[0m");
+}
+
