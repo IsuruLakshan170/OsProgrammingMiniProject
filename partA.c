@@ -24,36 +24,46 @@ typedef struct
 } student_marks;
 
 student_marks studentList[listSize]; // define the student marks array
-int studentListSize = 0;             // define integer varible for get student list array size
 
+// initialize integer varibles
+int studentListSize = 0;     // define integer varible for get student list array size
 int regNumberList[listSize]; // define array for store student registration number
 int length;                  // define integer varible for store student reg.No array size
+int studentIndex = 0;        // define integer varible for get current student index number
 
-int studentIndex = 0;           // define integer varible for get current student index number
-char newStudentRegNo[20];       // create string varible for store new student reg.No
+// initialize character varibles
+char newStudentRegNo[20]; // create string varible for store new student reg.No
+
+// initialize the void functions
 void yellow();                  // change colour of text as yellow
 void red();                     // change colour of text as red
 void reset();                   // change colour of text as default
-int readFile();                 // read student data from document
 void greetings();               // function for display menu
 void selectOperation(int code); // switch case for navigate to entered menu
 void insert();                  // function for insert operation
+void addStudent();              // function for add one student to array
+void updateStudent();           // function for update one student from array
+void deleteStudent();           // function for delete one student from array
+void writeFile();               // student data write to the document
+void removeStudentFromArray();  // remove student from array
+void printStudentList();        // print student list in console
+void backToMenu();              // navigate to menu pannel
+void addAllStudentMarks();      // function for add all students mannually
+void randomStudentGenerate();   // function for random data generate operation
+void generateRandomData();      // generate random data
 
-bool isExistingStudent();      // function for check new student is existing in current document
-void addStudent();             // function for add one student to array
-void updateStudent();          // function for update one student from array
-void deleteStudent();          // function for delete one student from array
-void writeFile();              // student data write to the document
-void removeStudentFromArray(); // remove student from array
-
-void printStudentList();                  // print student list in console
-void backToMenu();                        // navigate to menu pannel
-void addAllStudentMarks();                // function for add all students mannually
-bool isRegNoCorrect(char *name);          // funtion for check registration number format
-void randomStudentGenerate();             // function for random data generate operation
-void generateRandomData();                // generate random data
+// initialize the float functions
 float numGenarator(int lower, int upper); // random number generate
-student_marks randomStudent();            // generate one student Reg.No with marks randomly
+
+// initialize the bool functions
+bool isRegNoCorrect(char *name); // funtion for check registration number format
+bool isExistingStudent();        // function for check new student is existing in current document
+
+// initialize the int functions
+int readFile(); // read student data from document
+
+// initialize the structure type functions
+student_marks randomStudent(); // generate one student Reg.No with marks randomly
 
 //--------------------main function-----------------------------
 int main()
@@ -68,8 +78,8 @@ int readFile()
     studentListSize = 0;
     int count; // define for integer for save error number of success number
     int fd;
-    fd = open(fileName, O_RDONLY);
-    if (fd < 0) // error handle for file open
+    fd = open(fileName, O_RDONLY); // open file as read only mode
+    if (fd < 0)                    // error handle for file open
     {
         printf("Error number: %d\n", errno);
         perror("dataFile: ");
@@ -77,7 +87,7 @@ int readFile()
     }
     student_marks lastStudent;
     student_marks tempStudent;
-    lseek(fd, -sizeof(lastStudent), SEEK_END);
+    lseek(fd, -sizeof(lastStudent), SEEK_END); // set file pointer to end of the file
     count = read(fd, &lastStudent, sizeof(lastStudent));
     if (count < 0) // handle read error
     {
@@ -85,19 +95,19 @@ int readFile()
         perror("Read Error: ");
         exit(1);
     }
-    lseek(fd, 0, SEEK_SET);
+    lseek(fd, 0, SEEK_SET); // set file pointer to start of the file
 
     for (int i = 0; i < listSize; i++)
     {
-        count = read(fd, &tempStudent, sizeof(tempStudent));
-        if (count < 0) // handle read error
+        count = read(fd, &tempStudent, sizeof(tempStudent)); // read from document
+        if (count < 0)                                       // handle read error
         {
             printf("Error Number: %d\n", errno);
             perror("Read Error: ");
             exit(1);
         }
 
-        studentList[i] = tempStudent;
+        studentList[i] = tempStudent; // assign temp student to student list array
 
         studentListSize++;
         // printf("%d read from file : %s %s \n", i + 1, tempStudent.student_index, lastStudent.student_index);
@@ -113,7 +123,6 @@ int readFile()
 //----------------------------display menu pannel ---------------------------
 void greetings()
 {
-
     char heading[] = "Select following operations";
     char title[] = "code\tDescription\n";
     char ope1[] = "001\tInsert New Student";
@@ -123,16 +132,16 @@ void greetings()
     char ope5[] = "005\tShow Student Marks";
     char ope6[] = "006\tAuto generate 100 Random students with random Marks";
     char ope7[] = "007\tClose the Progrmme";
-    char codeNo[5];
-    int code;
+    int codeNo;
+    //  int code;
     while (1)
     {
 
-        red();
+        red(); // convert bellow text colour as red
         printf("--------------------------------------------\n");
-        reset();
+        reset(); // convert bellow text colour as default colour
         printf("%s\n\n", heading);
-        yellow();
+        yellow(); // convert bellow text colour as yellow
         printf("%s\n", title);
         reset();
 
@@ -141,47 +150,19 @@ void greetings()
         printf("--------------------------------------------\n");
         reset();
         printf("Enter code : ");
-        scanf("%s", codeNo);
+        int retValue = scanf("%d", &codeNo);
 
-        if ((!strcmp(codeNo, "001")) || (!strcmp(codeNo, "002")) || (!strcmp(codeNo, "003")) || (!strcmp(codeNo, "004")) || (!strcmp(codeNo, "005")) || (!strcmp(codeNo, "006")) || (!strcmp(codeNo, "007")))
+        if (retValue > 0)
         {
-            if (!strcmp(codeNo, "001"))
-            {
-                code = 1;
-            };
-            if (!strcmp(codeNo, "002"))
-            {
-                code = 2;
-            };
-            if (!strcmp(codeNo, "003"))
-            {
-                code = 3;
-            };
-            if (!strcmp(codeNo, "004"))
-            {
-                code = 4;
-            };
-            if (!strcmp(codeNo, "005"))
-            {
-                code = 5;
-            };
-            if (!strcmp(codeNo, "006"))
-            {
-                code = 6;
-            };
-            if (!strcmp(codeNo, "007"))
-            {
-                code = 7;
-            };
-            selectOperation(code);
+            selectOperation(codeNo); // calling the function for navigate to menu items
             break;
         }
-
         else
         {
             red();
-            printf("You Entered Code is Incorrect! Try Gain\n");
+            printf("\nYou Entered Code is Incorrect!\n\n");
             reset();
+            exit(1);
         }
     }
 }
@@ -189,46 +170,45 @@ void greetings()
 //-----------------switch function for navigate to menu items-----------------
 void selectOperation(int index)
 {
-    switch (index)
+    switch (index) // switch operation
     {
-    case 1:
+    case 1: // insert operation
     {
         insert();
         backToMenu();
         break;
     }
-    case 2:
+    case 2: // update operation
     {
         updateStudent();
         backToMenu();
         break;
     }
-    case 3:
+    case 3: // delete operation
     {
         deleteStudent();
         backToMenu();
         break;
     }
-    case 4:
+    case 4: // add all students marks mannullay operation
     {
-
         addAllStudentMarks();
         backToMenu();
         break;
     }
-    case 5:
+    case 5: // print to console all students marks
     {
         printStudentList();
         backToMenu();
         break;
     }
-    case 6:
+    case 6: // randomly generate all students marks
     {
         randomStudentGenerate();
         backToMenu();
         break;
     }
-    case 7:
+    case 7: // closed the programme
     {
         yellow();
         printf("\nSuccessfully closed the Programme\n\n");
@@ -236,7 +216,7 @@ void selectOperation(int index)
         break;
     }
 
-    default:
+    default: // error handle for invalid code
     {
         red();
         printf("Invalid error Code\n");
@@ -251,8 +231,8 @@ void selectOperation(int index)
 void insert()
 {
 
-    readFile();
-    if (studentListSize == listSize)
+    readFile();                      // read from document
+    if (studentListSize == listSize) // check student list is full or not
     {
         red();
         printf("Student List is full\n");
@@ -273,8 +253,8 @@ void addStudent()
         printf("Enter student regNo (EG/xxxx/xxxx) : ");
         scanf("%s", newStudent.student_index);
 
-        bool isCheck = isRegNoCorrect(newStudent.student_index);
-        if (isCheck)
+        bool isCheck = isRegNoCorrect(newStudent.student_index); // check registraion number is in correct format
+        if (isCheck)                                             // if student is in list close the i
         {
             break;
         }
@@ -292,11 +272,18 @@ void addStudent()
     if (!isNewStudent)
     {
         // printf("New Student\n");
-
+        int errNum;
         while (1)
         {
             printf("Enter student assignment 01 marks :");
-            scanf("%f", &newStudent.assgnmt01_marks);
+            errNum = scanf("%f", &newStudent.assgnmt01_marks); // check scanf output success or not
+            if (errNum <= 0)                                   // error handle for input integer marks
+            {
+                red();
+                printf("\nSomething worng\n\n");
+                exit(1);
+            }
+
             if (newStudent.assgnmt01_marks > 15)
             {
                 red();
@@ -312,7 +299,13 @@ void addStudent()
         while (1)
         {
             printf("Enter student assignment 02 marks :");
-            scanf("%f", &newStudent.assgnmt02_marks);
+            errNum = scanf("%f", &newStudent.assgnmt02_marks); // check scanf output success or not
+            if (errNum <= 0)                                   // error handle for input integer marks
+            {
+                red();
+                printf("\nSomething worng\n\n");
+                exit(1);
+            }
             if (newStudent.assgnmt02_marks > 15)
             {
                 red();
@@ -329,7 +322,13 @@ void addStudent()
         {
 
             printf("Enter student project marks :");
-            scanf("%f", &newStudent.project_marks);
+            errNum = scanf("%f", &newStudent.project_marks); // check scanf output success or not
+            if (errNum <= 0)                                 // error handle for input integer marks
+            {
+                red();
+                printf("\nSomething worng\n\n");
+                exit(1);
+            }
             if (newStudent.project_marks > 20)
             {
                 red();
@@ -345,7 +344,13 @@ void addStudent()
         {
 
             printf("Enter student finalExam marks :");
-            scanf("%f", &newStudent.finalExam_marks);
+            errNum = scanf("%f", &newStudent.finalExam_marks); // check scanf output success or not
+            if (errNum <= 0)                                   // error handle for input integer marks
+            {
+                red();
+                printf("\nSomething worng\n\n");
+                exit(1);
+            }
             if (newStudent.finalExam_marks > 50)
             {
                 red();
@@ -410,11 +415,17 @@ void updateStudent()
     else
     {
         // printf("This Student in the list you can update this student\n"); // can do process
-
+        int errNum;
         while (1)
         {
             printf("Enter student assignment 01 marks : ");
-            scanf("%f", &newStudent.assgnmt01_marks);
+            errNum = scanf("%f", &newStudent.assgnmt01_marks); // check scanf output success or not
+            if (errNum <= 0)                                   // error handle for input integer marks
+            {
+                red();
+                printf("\nSomething worng\n\n");
+                exit(1);
+            }
             if (newStudent.assgnmt01_marks > 15)
             {
                 red();
@@ -430,7 +441,13 @@ void updateStudent()
         while (1)
         {
             printf("Enter student assignment 02 marks : ");
-            scanf("%f", &newStudent.assgnmt02_marks);
+            errNum = scanf("%f", &newStudent.assgnmt02_marks); // check scanf output success or not
+            if (errNum <= 0)                                   // error handle for input integer marks
+            {
+                red();
+                printf("\nSomething worng\n\n");
+                exit(1);
+            }
             if (newStudent.assgnmt02_marks > 15)
             {
                 red();
@@ -447,7 +464,13 @@ void updateStudent()
         {
 
             printf("Enter student project marks : ");
-            scanf("%f", &newStudent.project_marks);
+            errNum = scanf("%f", &newStudent.project_marks); // check scanf output success or not
+            if (errNum <= 0)                                 // error handle for input integer marks
+            {
+                red();
+                printf("\nSomething worng\n\n");
+                exit(1);
+            }
             if (newStudent.project_marks > 20)
             {
                 red();
@@ -463,7 +486,13 @@ void updateStudent()
         {
 
             printf("Enter student finalExam marks  : ");
-            scanf("%f", &newStudent.finalExam_marks);
+            errNum = scanf("%f", &newStudent.finalExam_marks); // check scanf output success or not
+            if (errNum <= 0)                                   // error handle for input integer marks
+            {
+                red();
+                printf("\nSomething worng\n\n");
+                exit(1);
+            }
             if (newStudent.finalExam_marks > 50)
             {
                 red();
@@ -642,7 +671,7 @@ void writeFile()
         }
         // printf("%d Write again Studen : %s\n", j + 1, (tempStudent.student_index));
     }
-    close(fd);//close the file
+    close(fd); // close the file
 }
 //----------------------------remove one student details from array ---------------
 void removeStudentFromArray()
@@ -695,15 +724,22 @@ void addAllStudentMarks()
 
         student_marks newStudent;
         int i = 0;
+        int errNum;
         while (i < listSize)
         {
 
             while (1)
             {
                 printf("Enter %d student regNo (EG/xxxx/xxxx) : ", i + 1);
-                scanf("%s", newStudent.student_index);
+                errNum = scanf("%s", newStudent.student_index);
+                if (errNum <= 0) // error handle for input integer marks
+                {
+                    red();
+                    printf("\nSomething worng\n\n");
+                    exit(1);
+                }
 
-                bool isCheck = isRegNoCorrect(newStudent.student_index);//check student index is in correct format
+                bool isCheck = isRegNoCorrect(newStudent.student_index); // check student index is in correct format
                 if (isCheck)
                 {
                     break;
@@ -716,15 +752,21 @@ void addAllStudentMarks()
                 }
             }
 
-            strcpy(newStudentRegNo, newStudent.student_index);//string copy
-            bool isNewStudent = isExistingStudent();//check student reg.no validity with current student array
+            strcpy(newStudentRegNo, newStudent.student_index); // string copy
+            bool isNewStudent = isExistingStudent();           // check student reg.no validity with current student array
             if (!isNewStudent)
             {
 
                 while (1)
                 {
                     printf("Enter student assignmet 01 marks : ");
-                    scanf("%f", &newStudent.assgnmt01_marks);
+                    errNum = scanf("%f", &newStudent.assgnmt01_marks);
+                    if (errNum <= 0) // error handle for input integer marks
+                    {
+                        red();
+                        printf("\nSomething worng\n\n");
+                        exit(1);
+                    }
                     if (newStudent.assgnmt01_marks > 15)
                     {
                         red();
@@ -740,7 +782,13 @@ void addAllStudentMarks()
                 while (1)
                 {
                     printf("Enter student assignment 02 marks : ");
-                    scanf("%f", &newStudent.assgnmt02_marks);
+                    errNum = scanf("%f", &newStudent.assgnmt02_marks);
+                    if (errNum <= 0) // error handle for input integer marks
+                    {
+                        red();
+                        printf("\nSomething worng\n\n");
+                        exit(1);
+                    }
                     if (newStudent.assgnmt02_marks > 15)
                     {
                         red();
@@ -757,7 +805,13 @@ void addAllStudentMarks()
                 {
 
                     printf("Enter student project marks : ");
-                    scanf("%f", &newStudent.project_marks);
+                    errNum = scanf("%f", &newStudent.project_marks);
+                    if (errNum <= 0) // error handle for input integer marks
+                    {
+                        red();
+                        printf("\nSomething worng\n\n");
+                        exit(1);
+                    }
                     if (newStudent.project_marks > 20)
                     {
                         red();
@@ -823,7 +877,9 @@ bool isRegNoCorrect(char *name)
     for (int i = 0; name[i] != '\0'; i++)
     {
         val2 = name[i];
-        if (isdigit(val2)) { }//given character is digit or not
+        if (isdigit(val2))
+        {
+        } // given character is digit or not
         else
         {
             if (i == 0 && val2 == 'E')
@@ -879,7 +935,7 @@ void randomStudentGenerate()
         reset();
 
         scanf("%s", userInput);
-        if (!strcmp(userInput, "Y") || !strcmp(userInput, "y"))//string compare 
+        if (!strcmp(userInput, "Y") || !strcmp(userInput, "y")) // string compare
         {
             //   printf("index : %d\n", studentIndex);
             generateRandomData();
@@ -975,14 +1031,14 @@ int regNumberGen(int lower, int upper)
 //----------------------------generate one student all marks and save to that student -------------
 student_marks randomStudent()
 {
-    int num = regNumberGen(3300, 3600);//add range of student number 
+    int num = regNumberGen(3300, 3600); // add range of student number
     char snum[100];
-    sprintf(snum, "EG/2018/%d", num);//sting combine together
+    sprintf(snum, "EG/2018/%d", num); // sting combine together
     student_marks tempStudent;
-    strncpy(tempStudent.student_index, snum, 12);//string copy
-    tempStudent.assgnmt01_marks = numGenarator(0, 15);//get marks with relevent marks range
-    tempStudent.assgnmt02_marks = numGenarator(0, 15);//get marks with relevent marks range
-    tempStudent.project_marks = numGenarator(0, 20);//get marks with relevent marks range
-    tempStudent.finalExam_marks = numGenarator(0, 50);//get marks with relevent marks range
+    strncpy(tempStudent.student_index, snum, 12);      // string copy
+    tempStudent.assgnmt01_marks = numGenarator(0, 15); // get marks with relevent marks range
+    tempStudent.assgnmt02_marks = numGenarator(0, 15); // get marks with relevent marks range
+    tempStudent.project_marks = numGenarator(0, 20);   // get marks with relevent marks range
+    tempStudent.finalExam_marks = numGenarator(0, 50); // get marks with relevent marks range
     return tempStudent;
 }

@@ -67,11 +67,11 @@ int main()
     }
     else if (PID1 == 0)
     {                 // child 1 process
-        sleep(0.001); // suspend the process
+        sleep(1); // suspend the process
         reset();
-        printf("Child 1 start\n");
+        printf("Child 1 (C1) start\n");
         yellow();
-        printf("Child 1 Id : %d  Parent Id : %d\n", getpid(), getppid());
+        printf("Child 1 (C1) Id : %d  Parent (P) Id : %d\n", getpid(), getppid());
         reset();
         student_marks *childPtr1;
         childPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // attaches structure type pointer to the shared memory segment in identified by shared memory ID
@@ -99,7 +99,9 @@ int main()
             printf("Error No: %d\n", errno);
             exit(0);
         }
-
+        red();
+        printf("Child 1 (C1) process: Hightest marks : %.2f\n", maximumMarks);
+        reset();
         childPtr2[1] = maximumMarks;             // write to the shared memory
         int childDt2 = shmdt((void *)childPtr2); // detaches the float pointer form shared memory segments individually by child
         if (childDt2 == -1)                      // error handle for detaches the shared memory
@@ -109,7 +111,7 @@ int main()
             exit(0);
         }
         reset();
-        printf("Child 1 closed\n");
+        printf("Child 1 (C1) closed\n");
     }
     else
     {
@@ -126,9 +128,9 @@ int main()
             // child 2 process
             // read -----
             reset();
-            printf("Child 2 start\n");
+            printf("Child 2 (C2) start\n");
             yellow();
-            printf("Child 2 Id : %d  Parent Id : %d\n", getpid(), getppid());
+            printf("Child 2 (C2) Id : %d  Parent Id : %d\n", getpid(), getppid());
             reset();
             student_marks *childPtr1;
             childPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // attaches structure type pointer to the shared memory segment in identified by shared memory ID
@@ -152,8 +154,10 @@ int main()
 
             //--child 2 write
 
-            childPtr2[2] = minValue;
-
+             childPtr2[2] = minValue;
+             red();
+             printf("Child 2 (C2) process: Lowest marks   : %.2f\n", minValue);
+             reset();
             int childDt1 = shmdt((void *)childPtr1); // detaches the structure pointer form shared memory segments individually by child
             if (childDt1 == -1)                      // error handle for detaches the shared memory
             {
@@ -169,7 +173,7 @@ int main()
                 exit(0);
             }
             reset();
-            printf("child 2 closed\n");
+            printf("child 2 (C2) closed\n");
         }
         else
         {
@@ -183,12 +187,15 @@ int main()
             }
             else if (PID3 == 0)
             { // child 3 process
+           
                 reset();
-                printf("Child 3 start\n");
+                printf("Child 3 (C3) start\n");
+               
                 yellow();
-                printf("Child 3 Id : %d  Parent Id : %d\n", getpid(), getppid());
+                printf("Child 3 (C3) Id : %d  Parent Id : %d\n", getpid(), getppid());
                 reset();
                 // read------
+                  sleep(1);
                 student_marks *childPtr1;
                 childPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // attaches structure type pointer to the shared memory segment in identified by shared memory ID
                 if (childPtr1 == (void *)-1)                                   // error handle for shared memory attachmet
@@ -212,8 +219,9 @@ int main()
                 // write----
 
                 childPtr2[3] = average;
-                printf("Child 3 closed\n");
-
+                red();
+                 printf("Child 3 (C3) process: Average marks  : %.2f\n", average);
+               reset();
                 int childDt1 = shmdt((void *)childPtr1); // detaches the structure pointer form shared memory segments individually by child
                 if (childDt1 == -1)                      // error handle for detaches the shared memory
                 {
@@ -228,6 +236,8 @@ int main()
                     printf("Error No: %d\n", errno);
                     exit(0);
                 }
+                printf("Child 3 closed\n");//child 3 process closed
+
             }
             else
             {
@@ -245,9 +255,9 @@ int main()
                 reset();
 
                 
-                printf("Parent Start\n");
+                printf("Parent (P) Start\n");
                 yellow();
-                printf("Parent Id : %d\n", getpid());
+                printf("Parent (P) Id : %d\n", getpid());
                 reset();
                 // read from file
                 student_marks studentList[listSize];
@@ -325,7 +335,7 @@ int main()
 
                 waitpid(PID1, NULL, 0); // wait untill child 1 terminate
                 waitpid(PID2, NULL, 0); // wait untill child 2 terminate
-                waitpid(PID2, NULL, 0); // wait untill child 3 terminate
+                waitpid(PID3, NULL, 0); // wait untill child 3 terminate
                 printf("\nAll 3 childrens are closed \n\n");
                 // parent read--------------------------------
                 // printf("parent read \n");
@@ -333,22 +343,9 @@ int main()
                 // 10%above number of students
                 int arraySize = (int)*(parentPtr2 + 0);
                 int studentCount = studentAbovePercentage(parentPtr1, arraySize); // call function for count number of student have higher than 10% marks
-                yellow();
-                printf("-----------------------------------------\n");
-                reset();
-                red();
-                printf("\n-------------");
-                reset();
-                printf("Process Results");
-                red();
-                printf("-------------\n\n");
-                reset();
+              
 
-                printf("From child 1 process: Hightest marks : %f\n", *(parentPtr2 + 1));
-                printf("From child 2 process: Lowest marks   : %f\n", *(parentPtr2 + 2));
-                printf("From child 3 process: Average marks  : %f\n", *(parentPtr2 + 3));
-                printf("From parent 1 process: Number of student higher than 10 Percent : %d\n", studentCount);
-                //   printf("Size of student list:------%d\n", (int)*(childPtrResults + 0));
+
                 yellow();
                 printf("-----------------------------------------\n");
                 reset();
@@ -364,9 +361,9 @@ int main()
                 printf("\tTopic\t\t\t\t\tResults\n\n");
                 reset();
 
-                printf("   Hightest marks\t\t\t\t%f\n", *(parentPtr2 + 1));
-                printf("   Lowest marks\t\t\t\t\t%f\n", *(parentPtr2 + 2));
-                printf("   Average marks\t\t\t\t%f\n", *(parentPtr2 + 3));
+                printf("   Hightest marks\t\t\t\t%.2f\n", *(parentPtr2 + 1));
+                printf("   Lowest marks\t\t\t\t\t%.2f\n", *(parentPtr2 + 2));
+                printf("   Average marks\t\t\t\t%.2f\n", *(parentPtr2 + 3));
                 printf("   Number of student higher than 10 percent\t%d\n", studentCount);
                 yellow();
                 printf("\n--------------------------------------------------------------\n");
