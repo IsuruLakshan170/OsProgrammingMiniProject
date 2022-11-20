@@ -1,19 +1,21 @@
-#include <fcntl.h>   //Permissions
-#include <errno.h>   //Stores error number
-#include <stdio.h>   //Standard I/O
-#include <string.h>  //handle string string copy //strcpy
-#include <stdlib.h>  //provide exit
-#include <unistd.h>  // and read
-#include <sys/ipc.h> // interprocess communication
-#include <sys/shm.h> // definitions for the shared memory facility
-#include <sys/wait.h>
+#include <fcntl.h>    //Permissions
+#include <errno.h>    //Stores error number
+#include <stdio.h>    //Standard I/O
+#include <string.h>   //handle string string copy //strcpy
+#include <stdlib.h>   //provide exit
+#include <unistd.h>   // and read
+#include <sys/ipc.h>  // interprocess communication
+#include <sys/shm.h>  // definitions for the shared memory facility
+#include <sys/wait.h> //declares for used to holding processes
 #include <sys/ipc.h>  // interprocess communication
 #include <sys/shm.h>  // definitions for the shared memory facility
 #include <sys/stat.h> //define the structure of the data returned by the function
 
-#define listSize 100
-#define fileName1 "studentMarks"
-#define fileName2 "myfile"
+#define listSize 100             // define student marks array size
+#define fileName1 "studentMarks" // define student marks stored document name
+#define fileName2 "myfile"       // define the file name for generate unique id
+
+// define the structure for store student marks
 typedef struct
 {
     char student_index[20]; // EG/XXXX/XXXX
@@ -23,47 +25,48 @@ typedef struct
     float finalExam_marks;  // 50%
 } student_marks;
 
-void red();
-void yellow();
-void reset();
-int readFile();
-void printStudentList();
-void displayAssignment01Marks();
-int sizeOfArray(student_marks *arry);
-float maxMarks(student_marks *arry, int size);
-float minMarks(student_marks *arry, int size);
-float averageMarks(student_marks *arry, int size);
-int studentAbovePercentage(student_marks *arry, int size);
+void red();              // change colour of text as red
+void yellow();           // change colour of text as yellow
+void reset();            // change colour of text as default
+int readFile();          // read student data from document
+void printStudentList(); // print student list in console
 
+float maxMarks(student_marks *arry, int size);             // function for find maximum marks for assignment 02
+float minMarks(student_marks *arry, int size);             // function for find minimum marks for assignment 02
+float averageMarks(student_marks *arry, int size);         /// function for find average marks for assignment 02
+int studentAbovePercentage(student_marks *arry, int size); // function for find the number of student higher than 10% of assignment 02 marks
+
+//--------------------main function-----------------------------
 int main()
 {
-    int fd2;
-    fd2 = open(fileName2,  O_CREAT | O_TRUNC, 0644);
-    close(fd2);
-    key_t ky = ftok("myfile", 78); // use to generate a unique key
-    if (ky == -1)
+    int fd2;                                        // initialize integer for file discripter
+    fd2 = open(fileName2, O_CREAT | O_TRUNC, 0644); // open file for create update  the file
+    close(fd2);                                     // close the file descripter
+    key_t ky = ftok("myfile", 78);                  // generate a unique key
+    if (ky == -1)                                   // error handle for that key
     {
         perror("ftok error: ");
         printf("Error No: %d\n", errno);
         exit(1);
     }
 
-    int SMID = shmget(ky, 4096, IPC_CREAT | 0666); // create new system virutal shared memory segment
-    if (SMID == -1)
+    int SMID = shmget(ky, 4096, IPC_CREAT | 0666); // create new  virutal shared memory segment
+    if (SMID == -1)                                // error handling for creaded shared memory
     {
         perror("shmget error: ");
         printf("Error No: %d\n", errno);
         exit(1);
     }
-    pid_t PID1 = fork();
-    if (PID1 == -1)
+    // 1 duplication of process
+    pid_t PID1 = fork(); // duplicate the bellow process
+    if (PID1 == -1)      // error handle for process id
     {
         perror("fork error: ");
         printf("Error No: %d\n", errno);
         exit(0);
     }
     else if (PID1 == 0)
-    {   // child 1 process
+    {                 // child 1 process
         sleep(0.001); // suspend the process
         reset();
         printf("Child 1 start\n");
@@ -71,39 +74,35 @@ int main()
         printf("Child 1 Id : %d  Parent Id : %d\n", getpid(), getppid());
         reset();
         student_marks *childPtr1;
-        childPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-        if (childPtr1 == (void *)-1)
+        childPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // attaches structure type pointer to the shared memory segment in identified by shared memory ID
+        if (childPtr1 == (void *)-1)                                   // error handle for shared memory attachmet
         {
-            perror("child shmat error: ");
+            perror("child 1 shmat error: ");
             printf("Error No: %d\n", errno);
             exit(1);
         }
         float *childPtr2;
-        childPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-        if (childPtr2 == (float *)-1)
+        childPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // attaches float type pointer to the shared memory segment in identified by shared memory ID
+        if (childPtr2 == (float *)-1)                          // error handle for shared memory attachmet
         {
             perror("parent shmat error: ");
             printf("Error No: %d\n", errno);
             exit(1);
         }
         int arraySize = (int)*(childPtr2 + 0);
-        //  printf("---------------->size:%d\n",arraySize);
         float maximumMarks = maxMarks(childPtr1, arraySize);
 
-        //   printf("--->-------higtest marks: %f\n",maxMarks);
-        int childDt1 = shmdt((void *)childPtr1); // detaches the shared memory segments individually
-        if (childDt1 == -1)
+        int childDt1 = shmdt((void *)childPtr1); // detaches the structed pointer from the shared memory segments individually by child
+        if (childDt1 == -1)                      // error handle for detaches the shared memory
         {
             perror("child shmdt error 1: ");
             printf("Error No: %d\n", errno);
             exit(0);
         }
-        // child 1 write ------------------
 
-        childPtr2[1] = maximumMarks;
-
-        int childDt2 = shmdt((void *)childPtr2); // detaches the shared memory segments individually
-        if (childDt2 == -1)
+        childPtr2[1] = maximumMarks;             // write to the shared memory
+        int childDt2 = shmdt((void *)childPtr2); // detaches the float pointer form shared memory segments individually by child
+        if (childDt2 == -1)                      // error handle for detaches the shared memory
         {
             perror("child 1 shmdt 2 error : ");
             printf("Error No: %d\n", errno);
@@ -114,9 +113,9 @@ int main()
     }
     else
     {
-
-        pid_t PID2 = fork();
-        if (PID2 == -1)
+        // 2 nd duplication of process
+        pid_t PID2 = fork(); // duplicate the bellow processs
+        if (PID2 == -1)      // error handle for process id
         {
             perror("fork error: ");
             printf("Error No: %d\n", errno);
@@ -132,16 +131,16 @@ int main()
             printf("Child 2 Id : %d  Parent Id : %d\n", getpid(), getppid());
             reset();
             student_marks *childPtr1;
-            childPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-            if (childPtr1 == (void *)-1)
+            childPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // attaches structure type pointer to the shared memory segment in identified by shared memory ID
+            if (childPtr1 == (void *)-1)                                   // error handle for shared memory attachmet
             {
                 perror("child shmat error: ");
                 printf("Error No: %d\n", errno);
                 exit(1);
             }
             float *childPtr2;
-            childPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-            if (childPtr2 == (float *)-1)
+            childPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // attaches float type pointer to the shared memory segment in identified by shared memory ID
+            if (childPtr2 == (float *)-1)                          // error handle for shared memory attachmet
             {
                 perror("parent shmat error: ");
                 printf("Error No: %d\n", errno);
@@ -151,21 +150,19 @@ int main()
 
             float minValue = minMarks(childPtr1, arraySize);
 
-            //  printf("lowest marks %f \n", minValue);
-
             //--child 2 write
 
             childPtr2[2] = minValue;
-           
-            int childDt1 = shmdt((void *)childPtr1); // detaches the shared memory segments individually
-            if (childDt1 == -1)
+
+            int childDt1 = shmdt((void *)childPtr1); // detaches the structure pointer form shared memory segments individually by child
+            if (childDt1 == -1)                      // error handle for detaches the shared memory
             {
                 perror("child shmdt error 1: ");
                 printf("Error No: %d\n", errno);
                 exit(0);
             }
-            int childDt2 = shmdt((void *)childPtr2); // detaches the shared memory segments individually
-            if (childDt2 == -1)
+            int childDt2 = shmdt((void *)childPtr2); // detaches the float pointer form shared memory segments individually by child
+            if (childDt2 == -1)                      // error handle for detaches the shared memory
             {
                 perror("child 1 shmdt 2 error : ");
                 printf("Error No: %d\n", errno);
@@ -173,13 +170,12 @@ int main()
             }
             reset();
             printf("child 2 closed\n");
-
         }
         else
         {
-
-            pid_t PID3 = fork();
-            if (PID3 == -1)
+            // 3 duplication of process
+            pid_t PID3 = fork(); // duplicate the bellow process
+            if (PID3 == -1)      // error handle for process id
             {
                 perror("fork error: ");
                 printf("Error No: %d\n", errno);
@@ -187,23 +183,23 @@ int main()
             }
             else if (PID3 == 0)
             { // child 3 process
-            reset();
-            printf("Child 3 start\n");
-            yellow();
+                reset();
+                printf("Child 3 start\n");
+                yellow();
                 printf("Child 3 Id : %d  Parent Id : %d\n", getpid(), getppid());
                 reset();
                 // read------
                 student_marks *childPtr1;
-                childPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-                if (childPtr1 == (void *)-1)
+                childPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // attaches structure type pointer to the shared memory segment in identified by shared memory ID
+                if (childPtr1 == (void *)-1)                                   // error handle for shared memory attachmet
                 {
                     perror("child shmat error: ");
                     printf("Error No: %d\n", errno);
                     exit(1);
                 }
                 float *childPtr2;
-                childPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-                if (childPtr2 == (float *)-1)
+                childPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // attaches float type pointer to the shared memory segment in identified by shared memory ID
+                if (childPtr2 == (float *)-1)                          // error handle for shared memory attachmet
                 {
                     perror("parent shmat error: ");
                     printf("Error No: %d\n", errno);
@@ -218,15 +214,15 @@ int main()
                 childPtr2[3] = average;
                 printf("Child 3 closed\n");
 
-                int childDt1 = shmdt((void *)childPtr1); // detaches the shared memory segments individually
-                if (childDt1 == -1)
+                int childDt1 = shmdt((void *)childPtr1); // detaches the structure pointer form shared memory segments individually by child
+                if (childDt1 == -1)                      // error handle for detaches the shared memory
                 {
                     perror("child shmdt error 1: ");
                     printf("Error No: %d\n", errno);
                     exit(0);
                 }
-                int childDt2 = shmdt((void *)childPtr2); // detaches the shared memory segments individually
-                if (childDt2 == -1)
+                int childDt2 = shmdt((void *)childPtr2); // attaches float type pointer to the shared memory segment in identified by shared memory ID
+                if (childDt2 == -1)                      // error handle for detaches the shared memory
                 {
                     perror("child 1 shmdt 2 error : ");
                     printf("Error No: %d\n", errno);
@@ -239,6 +235,16 @@ int main()
                 yellow();
                 printf("-----------------------------------------\n");
                 reset();
+
+                red();
+                printf("\n-------------");
+                reset();
+                printf("Start to analizing Assignment 2 marks");
+                red();
+                printf("-------------\n\n");
+                reset();
+
+                
                 printf("Parent Start\n");
                 yellow();
                 printf("Parent Id : %d\n", getpid());
@@ -247,18 +253,37 @@ int main()
                 student_marks studentList[listSize];
                 int studentListSize;
                 studentListSize = 0;
-                int fd;
+                int fd, count;
 
-                fd = open(fileName1, O_RDONLY);
+                fd = open(fileName1, O_RDONLY); // open the file with only read only mode
+                if (fd < 0)                     // handle error file open
+                {
+                    printf("Erro number: %d\n", errno);
+                    perror("file open error");
+                    exit(1);
+                }
                 student_marks lastStudent;
                 student_marks tempStudent;
                 lseek(fd, -sizeof(lastStudent), SEEK_END);
-                read(fd, &lastStudent, sizeof(lastStudent));
-                lseek(fd, 0, SEEK_SET);
+                count = read(fd, &lastStudent, sizeof(lastStudent)); // read form file descripter
+                if (count < 0)                                       // error hadle for read from file
+                {
+                    printf("Error Number: %d\n", errno);
+                    perror("Read Error: ");
+                    exit(1);
+                }
+                lseek(fd, 0, SEEK_SET); // nevigate to specific place of the file discripter
 
                 for (int i = 0; i < listSize; i++)
                 {
-                    read(fd, &tempStudent, sizeof(tempStudent));
+                    count = read(fd, &tempStudent, sizeof(tempStudent)); // read form file descripter
+                    if (count < 0)                                       // error hadle for read from file
+                    {
+                        printf("Error Number: %d\n", errno);
+                        perror("Read Error: ");
+                        break;
+                        exit(1);
+                    }
 
                     studentList[i] = tempStudent;
 
@@ -270,11 +295,11 @@ int main()
                     }
                 }
 
-                close(fd);
+                close(fd); // close the file descripter
 
                 student_marks *parentPtr1;
-                parentPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-                if (parentPtr1 == (student_marks *)-1)
+                parentPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // attaches structure type pointer to the shared memory segment in identified by shared memory ID
+                if (parentPtr1 == (student_marks *)-1)                          // error handle for shared memory attachment
                 {
                     perror("parent shmat error: ");
                     printf("Error No: %d\n", errno);
@@ -286,8 +311,8 @@ int main()
                 }
 
                 float *parentPtr2;
-                parentPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // create a new shared memory segment or to locate an existing one based on a key
-                if (parentPtr2 == (void *)-1)
+                parentPtr2 = (float *)shmat(SMID, NULL, SHM_R | SHM_W); // attaches float type pointer to the shared memory segment in identified by shared memory ID
+                if (parentPtr2 == (void *)-1)                           // error handle for shared memory attachment
                 {
                     perror("child shmat error: ");
                     printf("Error No: %d\n", errno);
@@ -296,18 +321,18 @@ int main()
 
                 parentPtr2[0] = studentListSize;
 
-               // printf("parent write to shared memory finished \n");
+                // printf("parent write to shared memory finished \n");
 
                 waitpid(PID1, NULL, 0); // wait untill child 1 terminate
                 waitpid(PID2, NULL, 0); // wait untill child 2 terminate
                 waitpid(PID2, NULL, 0); // wait untill child 3 terminate
                 printf("\nAll 3 childrens are closed \n\n");
                 // parent read--------------------------------
-               // printf("parent read \n");
+                // printf("parent read \n");
 
                 // 10%above number of students
                 int arraySize = (int)*(parentPtr2 + 0);
-                int studentCount = studentAbovePercentage(parentPtr1, arraySize);
+                int studentCount = studentAbovePercentage(parentPtr1, arraySize); // call function for count number of student have higher than 10% marks
                 yellow();
                 printf("-----------------------------------------\n");
                 reset();
@@ -347,16 +372,15 @@ int main()
                 printf("\n--------------------------------------------------------------\n");
                 reset();
 
-
-                int parntDt1 = shmdt((void *)parentPtr1); // detaches the shared memory segments individually
-                if (parntDt1 == -1)
+                int parntDt1 = shmdt((void *)parentPtr1); // detaches the structure pointer form shared memory segments individually by child
+                if (parntDt1 == -1)                       // error handle for detaches the shared memory
                 {
                     perror("parent shmdt error: ");
                     printf("Error No: %d\n", errno);
                     exit(0);
                 }
-                 int parntDt2 = shmdt((void *)parentPtr2); // detaches the shared memory segments individually
-                if (parntDt2 == -1)
+                int parntDt2 = shmdt((void *)parentPtr2); // detaches the float pointer form shared memory segments individually by child
+                if (parntDt2 == -1)                       // error handle for detaches the shared memory
                 {
                     perror("parent shmdt error: ");
                     printf("Error No: %d\n", errno);
@@ -364,19 +388,20 @@ int main()
                 }
                 printf("parent closed\n");
                 int parntCtl = shmctl(SMID, IPC_RMID, NULL); // control the shared memory identified by SHMID ---- IPC_RMID --destroyed shared memory segment
-                if (parntCtl == -1)
+                if (parntCtl == -1)                          // error handle for destroy created shared memory
                 {
                     perror("parent shmctl error: ");
                     printf("Error No: %d\n", errno);
                     exit(0);
                 }
                 yellow();
-                 printf("Process End\n");
-                 reset();
+                printf("Process End\n");
+                reset();
             }
         }
     }
 }
+//----------------------------find maximum marks from assignment 2 --------------------
 float maxMarks(student_marks *arry, int size)
 {
 
@@ -396,7 +421,7 @@ float maxMarks(student_marks *arry, int size)
 
     return maxMarks;
 }
-
+//----------------------------find minimum marks from assignment 2 --------------------
 float minMarks(student_marks *arry, int size)
 {
 
@@ -415,7 +440,7 @@ float minMarks(student_marks *arry, int size)
     //  printf("%s has lowest marks %f \n", studentList[index].student_index, minMarks);
     return minMarks;
 }
-
+//----------------------------find average marks for assignment 2 --------------------
 float averageMarks(student_marks *arry, int size)
 {
 
@@ -429,6 +454,7 @@ float averageMarks(student_marks *arry, int size)
     return average;
 }
 
+//----------------------------find the number of student higher than get 10% of marks form assignment 1-------------------
 int studentAbovePercentage(student_marks *arry, int size)
 {
     float marginalMarks = 1.5;
@@ -445,16 +471,17 @@ int studentAbovePercentage(student_marks *arry, int size)
     return studentCount;
 }
 
+//-----------------------change the text colour as red-----------------------------
 void red()
 {
     printf("\033[1;31m");
 }
-
+//--------------------change the text colour as yellow-----------------------------
 void yellow()
 {
     printf("\033[1;33m");
 }
-
+//---------------------reset the text colur as default----------------------------
 void reset()
 {
     printf("\033[0m");
