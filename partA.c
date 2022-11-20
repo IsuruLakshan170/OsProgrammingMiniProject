@@ -24,8 +24,6 @@ typedef struct
 student_marks studentList[listSize];
 int studentListSize;
 
-
-
 int studentIndex = 0;
 char newStudentRegNo[20]; // = "EG/2018/3366";
 void yellow();
@@ -98,7 +96,7 @@ void greetings()
     int code;
     while (1)
     {
-        
+
         red();
         printf("--------------------------------------------\n");
         reset();
@@ -113,17 +111,31 @@ void greetings()
         reset();
         printf("Enter code : ");
         scanf("%s", codeNo);
-   
-        
-        if((!strcmp(codeNo, "001")) || (!strcmp(codeNo, "002")) || (!strcmp(codeNo, "003")) || (!strcmp(codeNo, "004")) || (!strcmp(codeNo, "005")) )
+
+        if ((!strcmp(codeNo, "001")) || (!strcmp(codeNo, "002")) || (!strcmp(codeNo, "003")) || (!strcmp(codeNo, "004")) || (!strcmp(codeNo, "005")))
         {
-         if(!strcmp(codeNo, "001")){code = 1;};
-        if(!strcmp(codeNo, "002")){code = 2;};
-        if(!strcmp(codeNo, "003")){code = 3;};
-        if(!strcmp(codeNo, "004")){code = 4;};
-        if(!strcmp(codeNo, "005")){code = 5;};
-               selectOperation(code);
-                break;
+            if (!strcmp(codeNo, "001"))
+            {
+                code = 1;
+            };
+            if (!strcmp(codeNo, "002"))
+            {
+                code = 2;
+            };
+            if (!strcmp(codeNo, "003"))
+            {
+                code = 3;
+            };
+            if (!strcmp(codeNo, "004"))
+            {
+                code = 4;
+            };
+            if (!strcmp(codeNo, "005"))
+            {
+                code = 5;
+            };
+            selectOperation(code);
+            break;
         }
 
         else
@@ -132,7 +144,6 @@ void greetings()
             printf("You Entered Code is Incorrect! Try Gain\n");
             reset();
         }
-       
     }
 }
 
@@ -225,16 +236,15 @@ void addStudent()
             red();
             printf("\nEntered Student Registraion Number in correct Format!.Try again\n");
             reset();
-           
         }
     }
 
     strcpy(newStudentRegNo, newStudent.student_index);
-   
+
     bool isNewStudent = isExistingStudent();
     if (!isNewStudent)
     {
-       // printf("New Student\n");
+        // printf("New Student\n");
 
         while (1)
         {
@@ -313,9 +323,9 @@ void addStudent()
     else
     {
         red();
-        printf("\n%s is an Existing student! Try Again\n\n",newStudent.student_index);
+        printf("\n%s is an Existing student! Try Again\n\n", newStudent.student_index);
         reset();
-         addStudent();
+        addStudent();
     }
 }
 
@@ -347,12 +357,12 @@ void updateStudent()
     if (!isNewStudent)
     {
         red();
-        printf("This Student not in list\n"); // can not do process
+        printf("\nThis Student not in list\n\n"); // can not do process
         reset();
     }
     else
     {
-       // printf("This Student in the list you can update this student\n"); // can do process
+        // printf("This Student in the list you can update this student\n"); // can do process
 
         while (1)
         {
@@ -410,7 +420,7 @@ void updateStudent()
             if (newStudent.finalExam_marks > 50)
             {
                 red();
-                printf("finalExam  marks  can't exceed higher than 250\n");
+                printf("FinalExam  marks  can't exceed higher than 250\n");
                 reset();
             }
             else
@@ -420,10 +430,11 @@ void updateStudent()
         }
         studentList[studentIndex] = newStudent;
         yellow();
-        printf("Successully updated Existing Student\n");
+        printf("Successully updated %s Student\n", newStudent.student_index);
         reset();
         writeFile();
         readFile();
+        printStudentList();
     }
 }
 void deleteStudent()
@@ -448,26 +459,72 @@ void deleteStudent()
         }
     }
 
-    //  printf("Entered Student No: %s\n", newStudentRegNo);
+    strcpy(newStudentRegNo, newStudent.student_index);
     bool isNewStudent = isExistingStudent();
     if (!isNewStudent)
     {
         red();
-        printf("This Student not in list can not delete\n");
+        printf("\nThis Student is not in the list.You can't delete\n\n");
         reset();
     }
     else
     {
 
         // printf("Existing student %s delete successfully \n", newStudentRegNo);
+        char userInput[5];
+        while (1)
+        {
 
-        printf("index : %d\n", studentIndex);
-        removeStudentFromArray();
-        yellow();
-        printf("The Student  delete successfully\n");
-        reset();
-        writeFile();
-        readFile();
+            red();
+            printf("Are you sure want to delete this Student ? It will Permanently remove the student marks from list! (Y or N) :");
+            reset();
+
+            scanf("%s", userInput);
+            if (!strcmp(userInput, "Y") || !strcmp(userInput, "y"))
+            {
+             //   printf("index : %d\n", studentIndex);
+                removeStudentFromArray();
+                yellow();
+                printf("The %s Student  delete successfully\n", newStudent.student_index);
+                reset();
+                writeFile();
+                readFile();
+                printStudentList();
+                break;
+            }
+            else if (!strcmp(userInput, "N") || !strcmp(userInput, "n"))
+            {
+                while (1)
+                {
+                    printf("Do you want to Navigate to menu again? (Y or N) : ");
+                    scanf("%s", userInput);
+                    if (!strcmp(userInput, "Y") || !strcmp(userInput, "y"))
+                    {
+                        greetings();
+                        break;
+                    }
+                    else if (!strcmp(userInput, "N") || !strcmp(userInput, "n"))
+                    {
+                        yellow();
+                        printf("programe closed!\n");
+                        reset();
+                        break;
+                    }
+                    else
+                    {
+                        red();
+                        printf("Please enter valid command !\n");
+                        reset();
+                    }
+                }
+            }
+            else
+            {
+                red();
+                printf("Please enter valid command !\n");
+                reset();
+            }
+        }
     }
 }
 void printStudentList()
@@ -497,7 +554,6 @@ bool isExistingStudent()
         // printf("%d : %s %s\n", i + 1, studentList[i].student_index, newStudentRegNo);
         if (!strcmp(studentList[i].student_index, newStudentRegNo))
         {
-            //
 
             return true;
         }
@@ -529,7 +585,7 @@ void writeFile()
 void removeStudentFromArray()
 {
     yellow();
-    printf("Remove student index %d: \n", studentIndex);
+   // printf("Remove student index %d: \n", studentIndex);
     reset();
     studentList[studentIndex] = studentList[studentListSize - 1];
     studentListSize--;
