@@ -150,19 +150,19 @@ void greetings()
         printf("--------------------------------------------\n");
         reset();
         printf("Enter code : ");
+        int retValue = scanf("%d", &codeNo);
 
-        int retValue = scanf("%d", &codeNo);//check user input is in correct data type
-        if (retValue > 0)//error handle
+        if (retValue > 0)
         {
             selectOperation(codeNo); // calling the function for navigate to menu items
-            break;//stop the loop of the function
+            break;
         }
         else
         {
             red();
             printf("\nYou Entered Code is Incorrect!\n\n");
             reset();
-            exit(1);//exit the current process
+            exit(1);
         }
     }
 }
@@ -215,6 +215,7 @@ void selectOperation(int index)
         reset();
         break;
     }
+
     default: // error handle for invalid code
     {
         red();
@@ -251,8 +252,8 @@ void addStudent()
     while (1)
     {
         printf("Enter student regNo (EG/xxxx/xxxx) : ");
-        returnVal = scanf("%s", newStudent.student_index); // error handle for user input
-        if (returnVal < 1)                                 // if user input is not in correct data type
+        returnVal = scanf("%s", newStudent.student_index);//error handle for user input
+        if (returnVal < 1)//if user input is not in correct data type
         {
             red();
             printf("User input is not in correct format!\n");
@@ -272,9 +273,9 @@ void addStudent()
         }
     }
 
-    strcpy(newStudentRegNo, newStudent.student_index); // string copy
+    strcpy(newStudentRegNo, newStudent.student_index);
 
-    bool isNewStudent = isExistingStudent(); // check new student is existing student or not
+    bool isNewStudent = isExistingStudent();
     if (!isNewStudent)
     {
         // printf("New Student\n");
@@ -386,24 +387,18 @@ void addStudent()
         addStudent();
     }
 }
-//-----------------------------update existing student from student marks list---------------------------
+//-----------------------------update existing student from student marks array---------------------------
 void updateStudent()
 {
-    student_marks newStudent; // declare structure type new student
-    int errNum;               // initialize the error number
+    student_marks newStudent;
+
     while (1)
     {
         printf("Enter student regNo (EG/xxxx/xxxx) : ");
-        errNum = scanf("%s", newStudent.student_index); // check scanf output success or not
-        if (errNum <= 0)                                // error handle for input integer marks
-        {
-            red();
-            printf("\nSomething worng\n\n");
-            exit(1);
-        }
+        scanf("%s", newStudent.student_index);
 
-        bool isCheck = isRegNoCorrect(newStudent.student_index); // check format of user input reg.No
-        if (isCheck)                                             // error handling
+        bool isCheck = isRegNoCorrect(newStudent.student_index);
+        if (isCheck)
         {
             break;
         }
@@ -415,7 +410,9 @@ void updateStudent()
         }
     }
     strcpy(newStudentRegNo, newStudent.student_index); // string copy
-    bool isNewStudent = isExistingStudent();           // check validity
+
+    //  printf("Entered the Student : %s\n", newStudent.student_index);
+    bool isNewStudent = isExistingStudent(); // check validity
     if (!isNewStudent)
     {
         red();
@@ -523,22 +520,17 @@ void updateStudent()
         printStudentList();
     }
 }
-//------------------------------delete a student from student marks list-------------------------
+//------------------------------delete a student from student marks array-------------------------
 void deleteStudent()
 {
     student_marks newStudent;
-    int errNum;
+
     while (1)
     {
         printf("Enter student regNo (EG/xxxx/xxxx) : ");
-        errNum = scanf("%s", newStudent.student_index); // check scanf output success or not
-        if (errNum <= 0)                                // error handle for input integer marks
-        {
-            red();
-            printf("\nSomething worng\n\n");
-            exit(1);
-        }
-        bool isCheck = isRegNoCorrect(newStudent.student_index); // check format of the list
+        scanf("%s", newStudent.student_index);
+
+        bool isCheck = isRegNoCorrect(newStudent.student_index);
         if (isCheck)
         {
             break;
@@ -550,6 +542,7 @@ void deleteStudent()
             reset();
         }
     }
+
     strcpy(newStudentRegNo, newStudent.student_index); // string copy
     bool isNewStudent = isExistingStudent();           // check validity of new student with existing student list
     if (!isNewStudent)
@@ -571,10 +564,10 @@ void deleteStudent()
             reset();
 
             scanf("%s", userInput);
-            if (!strcmp(userInput, "Y") || !strcmp(userInput, "y"))//string comparison
+            if (!strcmp(userInput, "Y") || !strcmp(userInput, "y"))
             {
                 //   printf("index : %d\n", studentIndex);
-                removeStudentFromArray();//student remove from list
+                removeStudentFromArray();
                 yellow();
                 printf("The %s Student  delete successfully\n", newStudent.student_index);
                 reset();
@@ -690,9 +683,13 @@ void writeFile()
 //----------------------------remove one student details from array ---------------
 void removeStudentFromArray()
 {
+    yellow();
+    // printf("Remove student index %d: \n", studentIndex);
+    reset();
     studentList[studentIndex] = studentList[studentListSize - 1];
     studentListSize--;
 
+    //  listSize =listSize+1;
 }
 
 //-----------------------------navigate to the menu pannel---------------------------

@@ -13,7 +13,7 @@
 
 #define listSize 100             // define student marks array size
 #define fileName1 "studentMarks" // define student marks stored document name
-#define fileName2 "myfile"       // define the file name for generate unique id
+#define fileName2 "myfile1"      // define the file name for generate unique id
 
 // define the structure for store student marks
 typedef struct
@@ -41,12 +41,20 @@ int main()
 {
     int fd2;                                        // initialize integer for file discripter
     fd2 = open(fileName2, O_CREAT | O_TRUNC, 0644); // open file for create update  the file
-    close(fd2);                                     // close the file descripter
-    key_t ky = ftok("myfile", 78);                  // generate a unique key
-    if (ky == -1)                                   // error handle for that key
+    if (fd2 < 0)                                    // handle error file open
     {
-        perror("ftok error: ");
+        printf("Erro number: %d\n", errno);
+        perror("file open error");
+        exit(1);
+    }
+    close(fd2);                    // close the file descripter
+    key_t ky = ftok("myfile", 78); // generate a unique key
+    if (ky == -1)                  // error handle for that key
+    {
+        red();
+        perror("\nftok error when generating key: \n");
         printf("Error No: %d\n", errno);
+        reset();
         exit(1);
     }
 
@@ -66,8 +74,7 @@ int main()
         exit(0);
     }
     else if (PID1 == 0)
-    {                 // child 1 process
-        sleep(0.1); // suspend the process
+    { // child 1 process
         reset();
         printf("Child 1 (C1) start\n");
         yellow();
@@ -91,7 +98,6 @@ int main()
         }
         int arraySize = (int)*(childPtr2 + 0);
         float maximumMarks = maxMarks(childPtr1, arraySize);
-
         int childDt1 = shmdt((void *)childPtr1); // detaches the structed pointer from the shared memory segments individually by child
         if (childDt1 == -1)                      // error handle for detaches the shared memory
         {
@@ -116,7 +122,6 @@ int main()
     else
     {
         // 2 nd duplication of process
-        sleep(0.2);
         pid_t PID2 = fork(); // duplicate the bellow processs
         if (PID2 == -1)      // error handle for process id
         {
@@ -127,7 +132,6 @@ int main()
         else if (PID2 == 0)
         {
             // child 2 process
-            // read -----
             reset();
             printf("Child 2 (C2) start\n");
             yellow();
@@ -150,15 +154,11 @@ int main()
                 exit(1);
             }
             int arraySize = (int)*(childPtr2 + 0);
-
             float minValue = minMarks(childPtr1, arraySize);
-
-            //--child 2 write
-
-             childPtr2[2] = minValue;
-             red();
-             printf("Child 2 (C2) process: Lowest marks   : %.2f\n", minValue);
-             reset();
+            childPtr2[2] = minValue; //--child 2 write to shared memory
+            red();
+            printf("Child 2 (C2) process: Lowest marks   : %.2f\n", minValue);
+            reset();
             int childDt1 = shmdt((void *)childPtr1); // detaches the structure pointer form shared memory segments individually by child
             if (childDt1 == -1)                      // error handle for detaches the shared memory
             {
@@ -188,15 +188,14 @@ int main()
             }
             else if (PID3 == 0)
             { // child 3 process
-           
                 reset();
                 printf("Child 3 (C3) start\n");
-               
+
                 yellow();
                 printf("Child 3 (C3) Id : %d  Parent Id : %d\n", getpid(), getppid());
                 reset();
                 // read------
-                  sleep(1);
+                sleep(1);
                 student_marks *childPtr1;
                 childPtr1 = (student_marks *)shmat(SMID, NULL, SHM_R | SHM_W); // attaches structure type pointer to the shared memory segment in identified by shared memory ID
                 if (childPtr1 == (void *)-1)                                   // error handle for shared memory attachmet
@@ -214,15 +213,12 @@ int main()
                     exit(1);
                 }
                 int arraySize = (int)*(childPtr2 + 0);
-                float average;
-                average = averageMarks(childPtr1, arraySize);
-
-                // write----
-
-                childPtr2[3] = average;
+                float average;                                // initialize the float varible for store average marks
+                average = averageMarks(childPtr1, arraySize); // call the function of average marks
+                childPtr2[3] = average;                       // write to the shared memory the average marks
                 red();
-                 printf("Child 3 (C3) process: Average marks  : %.2f\n", average);
-               reset();
+                printf("Child 3 (C3) process: Average marks  : %.2f\n", average);
+                reset();
                 int childDt1 = shmdt((void *)childPtr1); // detaches the structure pointer form shared memory segments individually by child
                 if (childDt1 == -1)                      // error handle for detaches the shared memory
                 {
@@ -237,8 +233,7 @@ int main()
                     printf("Error No: %d\n", errno);
                     exit(0);
                 }
-                printf("Child 3 closed\n");//child 3 process closed
-
+                printf("Child 3 closed\n"); // child 3 process closed
             }
             else
             {
@@ -255,7 +250,6 @@ int main()
                 printf("-------------\n\n");
                 reset();
 
-                
                 printf("Parent (P) Start\n");
                 yellow();
                 printf("Parent (P) Id : %d\n", getpid());
@@ -339,13 +333,10 @@ int main()
                 waitpid(PID3, NULL, 0); // wait untill child 3 terminate
                 printf("\nAll 3 childrens are closed \n\n");
                 // parent read--------------------------------
-                // printf("parent read \n");
 
                 // 10%above number of students
                 int arraySize = (int)*(parentPtr2 + 0);
                 int studentCount = studentAbovePercentage(parentPtr1, arraySize); // call function for count number of student have higher than 10% marks
-              
-
 
                 yellow();
                 printf("-----------------------------------------\n");
@@ -402,9 +393,7 @@ int main()
 //----------------------------find maximum marks from assignment 2 --------------------
 float maxMarks(student_marks *arry, int size)
 {
-
-    float maxMarks = 0;
-    char studentNo[20];
+    float maxMarks = 0; // initialize the float for store maximum marks
     int index = 0;
     for (int i = 0; i < size; i++)
     {
@@ -413,18 +402,13 @@ float maxMarks(student_marks *arry, int size)
             index = i;
             maxMarks = arry[i].assgnmt02_marks;
         }
-        //  printf("%d %s %f \n", i + 1, arry[i].student_index, arry[i].assgnmt02_marks);
     }
-    //  printf("%s has highest marks %f \n", arry[index].student_index, maxMarks);
-
     return maxMarks;
 }
 //----------------------------find minimum marks from assignment 2 --------------------
 float minMarks(student_marks *arry, int size)
 {
-
-    float minMarks = arry[0].assgnmt02_marks; //= array[0].assgnmt02_marks;
-    char studentNo[20];
+    float minMarks = arry[0].assgnmt02_marks; // Initialize array[0].assgnmt02_marks;
     int index = 0;
     for (int i = 0; i < size; i++)
     {
@@ -433,17 +417,15 @@ float minMarks(student_marks *arry, int size)
             index = i;
             minMarks = arry[i].assgnmt02_marks;
         }
-        // printf("%d %s %f \n", i + 1, studentList[i].student_index, studentList[i].assgnmt02_marks);
     }
-    //  printf("%s has lowest marks %f \n", studentList[index].student_index, minMarks);
     return minMarks;
 }
 //----------------------------find average marks for assignment 2 --------------------
 float averageMarks(student_marks *arry, int size)
 {
 
-    float average;
-    float sum = 0;
+    float average; // initialize a float varible for store average marks
+    float sum = 0; // initialize a float varible for sum of assignment 2 marks
     for (int i = 0; i < size; i++)
     {
         sum = sum + arry[i].assgnmt02_marks;
@@ -452,20 +434,18 @@ float averageMarks(student_marks *arry, int size)
     return average;
 }
 
-//----------------------------find the number of student higher than get 10% of marks form assignment 1-------------------
+//-----------------find the number of students having higher than 10% of marks from 15 marks in form assignment 1 -------------------
 int studentAbovePercentage(student_marks *arry, int size)
 {
-    float marginalMarks = 1.5;
-    int studentCount = 0;
+    float marginalMarks = 1.5; // initialize a float varible for store marginalMarks
+    int studentCount = 0;      // initialize a int varible for store count no of students
     for (int i = 0; i < size; i++)
     {
         if (marginalMarks < arry[i].assgnmt02_marks)
         {
             studentCount++;
-            // printf("%s student has %f  \n", studentList[i].student_index, studentList[i].assgnmt02_marks);
         }
     }
-    // printf("%d student have higher than 10 percentage marks\n", studentCount);
     return studentCount;
 }
 
