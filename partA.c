@@ -10,7 +10,7 @@
 #include <ctype.h>
 
 #define listSize 100
-#define fileName "studentMarks1"
+#define fileName "studentMarks"
 
 typedef struct
 {
@@ -23,6 +23,8 @@ typedef struct
 
 student_marks studentList[listSize];
 int studentListSize;
+int length;
+int regNumberList[listSize];
 
 int studentIndex = 0;
 char newStudentRegNo[20]; // = "EG/2018/3366";
@@ -47,6 +49,10 @@ void printStudentList();
 void backToMenu();
 void addAllStudentMarks();
 bool isRegNoCorrect(char *name);
+void randomStudentGenerate();
+void generateRandomData();
+float numGenarator(int lower, int upper);
+student_marks randomStudent();
 
 int main()
 {
@@ -92,6 +98,7 @@ void greetings()
     char ope3[] = "003\tDelete Student";
     char ope4[] = "004\tAdd Student All Student Marks";
     char ope5[] = "005\tShow Student Marks";
+    char ope6[] = "006\tAuto generate 100 Random students with random Marks";
     char codeNo[5];
     int code;
     while (1)
@@ -105,14 +112,14 @@ void greetings()
         printf("%s\n", title);
         reset();
 
-        printf("%s\n%s\n%s\n%s\n%s\n", ope1, ope2, ope3, ope4, ope5);
+        printf("%s\n%s\n%s\n%s\n%s\n%s\n", ope1, ope2, ope3, ope4, ope5, ope6);
         red();
         printf("--------------------------------------------\n");
         reset();
         printf("Enter code : ");
         scanf("%s", codeNo);
 
-        if ((!strcmp(codeNo, "001")) || (!strcmp(codeNo, "002")) || (!strcmp(codeNo, "003")) || (!strcmp(codeNo, "004")) || (!strcmp(codeNo, "005")))
+        if ((!strcmp(codeNo, "001")) || (!strcmp(codeNo, "002")) || (!strcmp(codeNo, "003")) || (!strcmp(codeNo, "004")) || (!strcmp(codeNo, "005")) || (!strcmp(codeNo, "006")))
         {
             if (!strcmp(codeNo, "001"))
             {
@@ -133,6 +140,10 @@ void greetings()
             if (!strcmp(codeNo, "005"))
             {
                 code = 5;
+            };
+            if (!strcmp(codeNo, "006"))
+            {
+                code = 6;
             };
             selectOperation(code);
             break;
@@ -179,6 +190,12 @@ void selectOperation(int index)
     case 5:
     {
         printStudentList();
+        backToMenu();
+        break;
+    }
+    case 6:
+    {
+        randomStudentGenerate();
         backToMenu();
         break;
     }
@@ -482,7 +499,7 @@ void deleteStudent()
             scanf("%s", userInput);
             if (!strcmp(userInput, "Y") || !strcmp(userInput, "y"))
             {
-             //   printf("index : %d\n", studentIndex);
+                //   printf("index : %d\n", studentIndex);
                 removeStudentFromArray();
                 yellow();
                 printf("The %s Student  delete successfully\n", newStudent.student_index);
@@ -585,7 +602,7 @@ void writeFile()
 void removeStudentFromArray()
 {
     yellow();
-   // printf("Remove student index %d: \n", studentIndex);
+    // printf("Remove student index %d: \n", studentIndex);
     reset();
     studentList[studentIndex] = studentList[studentListSize - 1];
     studentListSize--;
@@ -803,4 +820,124 @@ void yellow()
 void reset()
 {
     printf("\033[0m");
+}
+
+void randomStudentGenerate()
+{
+
+    char userInput[5];
+    while (1)
+    {
+
+        red();
+        printf("All the previous data will remove before random generate Student with marks!.Are you sure want to proceed? (Y or N) : ");
+        reset();
+
+        scanf("%s", userInput);
+        if (!strcmp(userInput, "Y") || !strcmp(userInput, "y"))
+        {
+            //   printf("index : %d\n", studentIndex);
+            generateRandomData();
+            yellow();
+            printf("\nSuccessfully generate 100 Random Students\n");
+            reset();
+
+            printStudentList();
+            break;
+        }
+        else if (!strcmp(userInput, "N") || !strcmp(userInput, "n"))
+        {
+            while (1)
+            {
+                printf("Do you want to Navigate to menu again? (Y or N) : ");
+                scanf("%s", userInput);
+                if (!strcmp(userInput, "Y") || !strcmp(userInput, "y"))
+                {
+                    greetings();
+                    break;
+                }
+                else if (!strcmp(userInput, "N") || !strcmp(userInput, "n"))
+                {
+                    yellow();
+                    printf("programe closed!\n");
+                    reset();
+                    break;
+                }
+                else
+                {
+                    red();
+                    printf("Please enter valid command !\n");
+                    reset();
+                }
+            }
+        }
+        else
+        {
+            red();
+            printf("Please enter valid command !\n");
+            reset();
+        }
+    }
+}
+
+void generateRandomData()
+{
+    studentListSize = 0;
+    for (int i = 0; i < listSize; i++)
+    {
+        student_marks student = randomStudent();
+        studentList[i] = student;
+        //   printf("%d\t%s\t%f\t%f\t%f\t%f\n",i+1,student.student_index,student.assgnmt01_marks,student.assgnmt02_marks,student.project_marks,student.finalExam_marks);
+        studentListSize++;
+    }
+
+    writeFile();
+    readFile();
+}
+
+float numGenarator(int lower, int upper)
+{
+    int num1 = (rand() % (upper - lower + 1)) + lower;
+    int num2 = (rand() % (99 - 1));
+    float num = num1 + (float)num2 / 100;
+    if (num > upper)
+    {
+        num -= 1;
+    }
+    if (num < lower)
+    {
+        num += 1;
+    }
+    return num;
+}
+
+int regNumberGen(int lower, int upper)
+{
+    int arrayLength = 0;
+    int num = (rand() % (upper - lower + 1)) + lower;
+    length = sizeof(regNumberList) / sizeof(regNumberList[0]);
+    for (int i = 0; i < length; i++)
+    {
+
+        if (regNumberList[i] == num)
+        {
+            num = regNumberGen(lower, upper);
+        }
+    }
+    regNumberList[length] = num;
+    return num;
+}
+
+student_marks randomStudent()
+{
+    int num = regNumberGen(3300, 3600);
+    char snum[100];
+    sprintf(snum, "EG/2018/%d", num);
+    student_marks tempStudent;
+    strncpy(tempStudent.student_index, snum, 12);
+    tempStudent.assgnmt01_marks = numGenarator(0, 15);
+    tempStudent.assgnmt02_marks = numGenarator(0, 15);
+    tempStudent.project_marks = numGenarator(0, 20);
+    tempStudent.finalExam_marks = numGenarator(0, 50);
+    return tempStudent;
 }

@@ -12,8 +12,8 @@
 #include <sys/stat.h> //define the structure of the data returned by the function
 
 #define listSize 100
-#define fileName "studentMarks1"
-
+#define fileName1 "studentMarks"
+#define fileName2 "myfile"
 typedef struct
 {
     char student_index[20]; // EG/XXXX/XXXX
@@ -34,8 +34,10 @@ int studentAbovePercentage(student_marks *arry, int size);
 
 int main()
 {
-
-    key_t ky = ftok("file.txt", 78); // use to generate a unique key
+    int fd2;
+    fd2 = open(fileName2,  O_CREAT | O_TRUNC, 0644);
+    close(fd2);
+    key_t ky = ftok("myfile", 78); // use to generate a unique key
     if (ky == -1)
     {
         perror("ftok error: ");
@@ -228,7 +230,7 @@ int main()
                 studentListSize = 0;
                 int fd;
 
-                fd = open(fileName, O_RDONLY);
+                fd = open(fileName1, O_RDONLY);
                 student_marks lastStudent;
                 student_marks tempStudent;
                 lseek(fd, -sizeof(lastStudent), SEEK_END);
