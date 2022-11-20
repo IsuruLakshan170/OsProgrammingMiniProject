@@ -22,7 +22,7 @@ typedef struct
 } student_marks;
 
 student_marks studentList[listSize];
-int studentListSize;
+int studentListSize = 0;
 int length;
 int regNumberList[listSize];
 
@@ -76,7 +76,7 @@ int readFile()
         read(fd, &tempStudent, sizeof(tempStudent));
 
         studentList[i] = tempStudent;
-
+        
         studentListSize++;
         // printf("%d read from file : %s %s \n", i + 1, tempStudent.student_index, lastStudent.student_index);
         if (strcmp(tempStudent.student_index, lastStudent.student_index) == 0)
@@ -99,6 +99,7 @@ void greetings()
     char ope4[] = "004\tAdd Student All Student Marks";
     char ope5[] = "005\tShow Student Marks";
     char ope6[] = "006\tAuto generate 100 Random students with random Marks";
+    char ope7[] = "007\tClose the Progrmme";
     char codeNo[5];
     int code;
     while (1)
@@ -107,19 +108,19 @@ void greetings()
         red();
         printf("--------------------------------------------\n");
         reset();
-        printf("%s\n", heading);
+        printf("%s\n\n", heading);
         yellow();
         printf("%s\n", title);
         reset();
 
-        printf("%s\n%s\n%s\n%s\n%s\n%s\n", ope1, ope2, ope3, ope4, ope5, ope6);
+        printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n", ope1, ope2, ope3, ope4, ope5, ope6,ope7);
         red();
         printf("--------------------------------------------\n");
         reset();
         printf("Enter code : ");
         scanf("%s", codeNo);
 
-        if ((!strcmp(codeNo, "001")) || (!strcmp(codeNo, "002")) || (!strcmp(codeNo, "003")) || (!strcmp(codeNo, "004")) || (!strcmp(codeNo, "005")) || (!strcmp(codeNo, "006")))
+        if ((!strcmp(codeNo, "001")) || (!strcmp(codeNo, "002")) || (!strcmp(codeNo, "003")) || (!strcmp(codeNo, "004")) || (!strcmp(codeNo, "005")) || (!strcmp(codeNo, "006")) || (!strcmp(codeNo, "007")))
         {
             if (!strcmp(codeNo, "001"))
             {
@@ -144,6 +145,10 @@ void greetings()
             if (!strcmp(codeNo, "006"))
             {
                 code = 6;
+            };
+            if (!strcmp(codeNo, "007"))
+            {
+                code = 7;
             };
             selectOperation(code);
             break;
@@ -199,6 +204,14 @@ void selectOperation(int index)
         backToMenu();
         break;
     }
+    case 7:
+    {
+        yellow();
+       printf("\nSuccessfully closed the Programme\n\n");
+       reset();
+        break;
+    }
+
 
     default:
     {
@@ -546,6 +559,13 @@ void deleteStudent()
 }
 void printStudentList()
 {
+    printf("%d\n",studentListSize);
+    if(studentListSize == 0)
+    {
+
+    }
+    else
+    {
     int j = 0;
     yellow();
     printf("\nNo\tStudent RegNo\tAssignment 1 marks\tAssignment 2 marks\tProject Marks\tFinal Exam Marks\n\n");
@@ -560,6 +580,9 @@ void printStudentList()
     yellow();
     printf("\nTotal Number of students in list : %d \n\n", j);
     reset();
+
+    }
+ 
 }
 bool isExistingStudent()
 {
