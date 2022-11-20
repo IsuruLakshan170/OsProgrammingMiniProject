@@ -67,7 +67,7 @@ int main()
     }
     else if (PID1 == 0)
     {                 // child 1 process
-        sleep(1); // suspend the process
+        sleep(0.1); // suspend the process
         reset();
         printf("Child 1 (C1) start\n");
         yellow();
@@ -116,6 +116,7 @@ int main()
     else
     {
         // 2 nd duplication of process
+        sleep(0.2);
         pid_t PID2 = fork(); // duplicate the bellow processs
         if (PID2 == -1)      // error handle for process id
         {
