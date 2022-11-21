@@ -68,8 +68,6 @@ student_marks randomStudent(); // generate one student Reg.No with marks randoml
 //--------------------main function-----------------------------
 int main()
 {
-    
-    // close(fd);//close file descripter
     readFile();  // read data from document
     greetings(); // display menu
 }
@@ -238,7 +236,7 @@ void selectOperation(int index)
 void insert()
 {
 
-   // readFile();                      // read from document
+    // readFile();                      // read from document
     if (studentListSize == listSize) // check student list is full or not
     {
         red();
@@ -259,8 +257,8 @@ void addStudent()
     while (1)
     {
         printf("Enter student regNo (EG/xxxx/xxxx) : ");
-        returnVal = scanf("%s", newStudent.student_index);//error handle for user input
-        if (returnVal < 1)//if user input is not in correct data type
+        returnVal = scanf("%s", newStudent.student_index); // error handle for user input
+        if (returnVal < 1)                                 // if user input is not in correct data type
         {
             red();
             printf("User input is not in correct format!\n");

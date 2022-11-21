@@ -47,9 +47,9 @@ int main()
         perror("file open error");
         exit(1);
     }
-    close(fd2);                    // close the file descripter
+    close(fd2);                     // close the file descripter
     key_t ky = ftok("myfile1", 78); // generate a unique key
-    if (ky == -1)                  // error handle for that key
+    if (ky == -1)                   // error handle for that key
     {
         red();
         perror("\nftok error when generating key: \n");
