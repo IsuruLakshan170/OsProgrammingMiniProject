@@ -76,8 +76,8 @@ int main()
         perror("student marks: ");
         exit(1);
     }
-    close(fd);
-    readFile();  // read data from document
+    close(fd);//close file descripter
+   // readFile();  // read data from document
     greetings(); // display menu
 }
 
@@ -125,7 +125,7 @@ int readFile()
             break;
         }
     }
-    // printf("Read file size : %d\n", studentListSize);
+    printf("Read file size : %d\n", studentListSize);
     close(fd); // close the file descripter
 }
 
@@ -240,7 +240,7 @@ void selectOperation(int index)
 void insert()
 {
 
-    readFile();                      // read from document
+   // readFile();                      // read from document
     if (studentListSize == listSize) // check student list is full or not
     {
         red();
@@ -685,7 +685,6 @@ void writeFile()
             printf("Error No: %d ", errno);
             exit(1);
         }
-        // printf("%d Write again Studen : %s\n", j + 1, (tempStudent.student_index));
     }
     close(fd); // close the file
 }
@@ -956,7 +955,7 @@ void randomStudentGenerate()
             //   printf("index : %d\n", studentIndex);
             generateRandomData();
             yellow();
-            printf("\nSuccessfully generate 100 Random Students\n");
+            printf("\nSuccessfully write 100 Students to the document\n");
             reset();
 
             printStudentList();

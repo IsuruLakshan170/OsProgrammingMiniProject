@@ -48,7 +48,7 @@ int main()
         exit(1);
     }
     close(fd2);                    // close the file descripter
-    key_t ky = ftok("myfile", 78); // generate a unique key
+    key_t ky = ftok("myfile1", 78); // generate a unique key
     if (ky == -1)                  // error handle for that key
     {
         red();
