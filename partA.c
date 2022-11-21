@@ -68,16 +68,9 @@ student_marks randomStudent(); // generate one student Reg.No with marks randoml
 //--------------------main function-----------------------------
 int main()
 {
-    int fd;//crete file descripter
-    fd = open(fileName, O_RDWR | O_CREAT | O_TRUNC,0644);//open file 
-    if (fd < 0)                    // error handle for file open
-    {
-        printf("Error number: %d\n", errno);
-        perror("student marks: ");
-        exit(1);
-    }
-    close(fd);//close file descripter
-   // readFile();  // read data from document
+    
+    // close(fd);//close file descripter
+    readFile();  // read data from document
     greetings(); // display menu
 }
 
@@ -92,6 +85,9 @@ int readFile()
     {
         printf("Error number: %d\n", errno);
         perror("dataFile: ");
+        red();
+        printf("\nStudent marks file can't find Please add it to the current location!!: \n");
+        reset();
         exit(1);
     }
     student_marks lastStudent;
@@ -125,8 +121,10 @@ int readFile()
             break;
         }
     }
-    printf("Read file size : %d\n", studentListSize);
+    yellow();
+    printf("\nStudent marks List size : %d\n", studentListSize);
     close(fd); // close the file descripter
+    reset();
 }
 
 //----------------------------display menu pannel ---------------------------
@@ -244,7 +242,7 @@ void insert()
     if (studentListSize == listSize) // check student list is full or not
     {
         red();
-        printf("Student List is full\n");
+        printf("Student List is full ! If you want to add new one please delete existing student\n");
         reset();
     }
     else
