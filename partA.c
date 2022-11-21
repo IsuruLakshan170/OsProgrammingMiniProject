@@ -68,6 +68,15 @@ student_marks randomStudent(); // generate one student Reg.No with marks randoml
 //--------------------main function-----------------------------
 int main()
 {
+    int fd;//crete file descripter
+    fd = open(fileName, O_RDWR | O_CREAT | O_TRUNC,0644);//open file 
+    if (fd < 0)                    // error handle for file open
+    {
+        printf("Error number: %d\n", errno);
+        perror("student marks: ");
+        exit(1);
+    }
+    close(fd);
     readFile();  // read data from document
     greetings(); // display menu
 }
@@ -268,7 +277,7 @@ void addStudent()
         else
         {
             red(); // change text color as red
-            printf("\nEntered Student Registraion Number in correct Format!.Try again\n");
+            printf("\nEntered Student Registraion Number is not in correct Format!.Try again\n");
             reset(); // change text color as default
         }
     }
@@ -663,7 +672,7 @@ void writeFile()
     if (fd < 0) // handle error for file open
     {
         printf("Erro number: %d\n", errno);
-        perror("my_file1");
+        perror("Student marks");
         exit(1);
     }
     for (int j = 0; j < studentListSize; j++)
